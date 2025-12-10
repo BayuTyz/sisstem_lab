@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran Laboratorium - Lab RS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { margin-top: 30px; }
+        @media print {
+            body * { visibility: hidden; }
+            #struk, #struk * { visibility: visible; }
+            #struk { position: absolute; top: 0; left: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Form Pembayaran Laboratorium</h4>
+        </div>
+        <div class="card-body">
+            <form id="formPembayaran">
+                <div class="mb-3">
+                    <label class="form-label">Nama Pasien</label>
+                    <input type="text" class="form-control" id="namaPasien" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Jenis Pemeriksaan</label>
+                    <select class="form-select" id="jenisPemeriksaan" required onchange="hitungBiaya()">
+                        <option value="">-- Pilih Pemeriksaan --</option>
+                        <option value="Darah Lengkap" data-harga="100000">Darah Lengkap - Rp 100.000</option>
+                        <option value="Glukosa Puasa" data-harga="50000">Glukosa Puasa - Rp 50.000</option>
+                        <option value="Kolesterol" data-harga="75000">Kolesterol - Rp 75.000</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Total Biaya</label>
+                    <input type="text" class="form-control" id="totalBiaya" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Metode Pembayaran</label>
+                    <select class="form-select" id="metodePembayaran" required>
+                        <option value="">-- Pilih Metode --</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Transfer Bank">Transfer Bank</option>
+                        <option value="E-Wallet">E-Wallet</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success w-50" onclick="bayar()">Bayar</button>
+                    <button type="button" class="btn btn-primary w-50" onclick="cetakStruk()">Cetak Struk</button>
+                </div>
+            </form>
+
+            <!-- Struk Pembayaran -->
+            <div id="struk" class="mt-4 p-3 border" style="display:none; background-color:white;">
+                <h5 class="text-center">Struk Pembayaran Laboratorium</h5>
+                <hr>
+                <p><strong>Nama Pasien:</strong> <span id="strukNama"></span></p>
+                <p><strong>Jenis Pemeriksaan:</strong> <span id="strukPemeriksaan"></span></p>
+                <p><strong>Total Biaya:</strong> <span id="strukBiaya"></span></p>
+                <p><strong>Metode Pembayaran:</strong> <span id="strukMetode"></span></p>
+                <p><strong>Tanggal:</strong> <span id="strukTanggal"></span></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const jenisPemeriksaan = document.getElementById('jenisPemeriksaan');
+    const totalBiaya = document.getElementById('totalBiaya');
+
+    function hitungBiaya() {
+        const selectedOption = jenisPemeriksaan.options[jenisPemeriksaan.selectedIndex];
+        const harga = selectedOption.getAttribute('data-harga');
+        totalBiaya.value = harga ? `Rp ${parseInt(harga).toLocaleString()}` : '';
+    }
+
+    function bayar() {
+        const nama = document.getElementById('namaPasien').value;
+        const pemeriksaan = jenisPemeriksaan.value;
+        const biaya = totalBiaya.value;
+        const metode = document.getElementById('metodePembayaran').value;
+
+        if (!nama || !pemeriksaan || !biaya || !metode) {
+            alert("Harap lengkapi semua data pembayaran!");
+            return;
+        }
+
+        alert(`Pembayaran pasien ${nama} untuk pemeriksaan ${pemeriksaan} sebesar ${biaya} berhasil melalui ${metode}.`);
+        
+        // Isi struk tanpa mencetak
+        document.getElementById('strukNama').innerText = nama;
+        document.getElementById('strukPemeriksaan').innerText = pemeriksaan;
+        document.getElementById('strukBiaya').innerText = biaya;
+        document.getElementById('strukMetode').innerText = metode;
+        document.getElementById('strukTanggal').innerText = new Date().toLocaleString();
+        document.getElementById('struk').style.display = 'block';
+    }
+
+    function cetakStruk() {
+        const struk = document.getElementById('struk');
+        if (struk.style.display === 'none') {
+            alert("Silakan lakukan pembayaran terlebih dahulu!");
+            return;
+        }
+        window.print();
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

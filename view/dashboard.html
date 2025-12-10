@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - MediLab</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar {
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+        .main-content {
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .logo-img {
+            width: 40px;
+            margin-right: 10px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <button class="btn btn-outline-light me-3 d-lg-none" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" alt="Logo MediLab" class="logo-img">
+            MediLab Dashboard
+        </a>
+        <div class="d-flex">
+            <span class="navbar-text me-3">Selamat Datang, Admin</span>
+            <a href="login.html" class="btn btn-danger btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="p-3">
+        <h5 class="text-center mb-4">Menu Navigasi</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#upload"><i class="fas fa-upload me-2"></i>Upload Hasil</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#patients"><i class="fas fa-users me-2"></i>Data Pasien</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#history"><i class="fas fa-history me-2"></i>Riwayat Pemeriksaan</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#reports"><i class="fas fa-chart-bar me-2"></i>Laporan</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#settings"><i class="fas fa-cog me-2"></i>Pengaturan</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <div class="container-fluid py-4">
+
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3 class="mb-2"><i class="fas fa-home me-2"></i>Selamat Datang di Dashboard MediLab</h3>
+                    <p class="text-muted">Kelola data laboratorium, pantau statistik, dan akses fitur utama dengan mudah.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card text-center p-4">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h4>1,250</h4>
+                    <p>Total Pasien</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card text-center p-4">
+                    <i class="fas fa-flask fa-2x mb-2"></i>
+                    <h4>450</h4>
+                    <p>Pemeriksaan Hari Ini</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card text-center p-4">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h4>98%</h4>
+                    <p>Akurasi Hasil</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card text-center p-4">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h4>24 Jam</h4>
+                    <p>Waktu Respons</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Aksi Cepat</h4>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="#upload" class="text-decoration-none">
+                    <div class="card text-center p-4 btn-custom text-white">
+                        <i class="fas fa-upload fa-3x mb-3"></i>
+                        <h5>Upload Hasil Pemeriksaan</h5>
+                        <p>Unggah hasil lab dengan cepat</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="#patients" class="text-decoration-none">
+                    <div class="card text-center p-4 btn-custom text-white">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5>Data Pasien</h5>
+                        <p>Kelola informasi pasien</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="#history" class="text-decoration-none">
+                    <div class="card text-center p-4 btn-custom text-white">
+                        <i class="fas fa-history fa-3x mb-3"></i>
+                        <h5>Riwayat Pemeriksaan</h5>
+                        <p>Lihat riwayat lengkap</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Patients Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h4 class="mb-3"><i class="fas fa-list me-2"></i>Pasien Terbaru</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID Pasien</th>
+                                    <th>Nama</th>
+                                    <th>Jenis Kelamin</th>
+                                    <th>Tanggal Lahir</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>001</td>
+                                    <td>Ahmad Surya</td>
+                                    <td>Laki-laki</td>
+                                    <td>15-05-1985</td>
+                                    <td><span class="badge bg-success">Aktif</span></td>
+                                    <td><button class="btn btn-sm btn-primary">Lihat Detail</button></td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>Siti Aminah</td>
+                                    <td>Perempuan</td>
+                                    <td>22-11-1990</td>
+                                    <td><span class="badge bg-warning">Menunggu</span></td>
+                                    <td><button class="btn btn-sm btn-primary">Lihat Detail</button></td>
+                                </tr>
+                                <tr>
+                                    <td>003</td>
+                                    <td>Budi Santoso</td>
+                                    <td>Laki-laki</td>
+                                    <td>10-03-1978</td>
+                                    <td><span class="badge bg-success">Aktif</span></td>
+                                    <td><button class="btn btn-sm btn-primary">Lihat Detail</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center py-3">
+            <p class="text-muted">&copy; 2023 MediLab. Semua hak dilindungi.</p>
+        </footer>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Toggle Sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        sidebar.classList.toggle('show');
+        mainContent.classList.toggle('expanded');
+    });
+</script>
+</body>
+</html>
