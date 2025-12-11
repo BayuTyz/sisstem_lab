@@ -3,7 +3,7 @@
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/models/User.php';
 
-session_start();
+// session_start();
 
 class Router {
     private $routes = [];
@@ -23,7 +23,9 @@ class Router {
                 '/validasi-hasil' => 'validasiHasil',
                 '/pembayaran' => 'pembayaran',
                 '/total-biaya' => 'totalBiaya',
-                '/logout' => 'logout'
+                '/logout' => 'logout',
+                '/api/stats' => 'getStats', 
+            '/api/pasien' => 'getPasienData' 
             ],
             
             'POST' => [

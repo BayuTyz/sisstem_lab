@@ -41,7 +41,6 @@ class User extends BaseModel {
     public function search($keyword) {
         $sql = "SELECT * FROM {$this->table} 
                 WHERE username LIKE :keyword 
-                OR full_name LIKE :keyword 
                 OR email LIKE :keyword";
         
         $stmt = $this->db->prepare($sql);
