@@ -95,19 +95,19 @@
             </p>
 
             <!-- Error Message -->
-            <!-- <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
+            <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show mb-3">
               <?php 
-                    echo $_SESSION['error'];
-                    unset($_SESSION['error']);
-                    ?>
+              echo $_SESSION['error'];
+              unset($_SESSION['error']);
+              ?>
               <button
                 type="button"
                 class="btn-close"
                 data-bs-dismiss="alert"
               ></button>
             </div>
-            <?php endif; ?> -->
+            <?php endif; ?>
 
             <!-- Login Form -->
             <form method="POST" action="/login" class="text-start">
@@ -141,7 +141,6 @@
                     placeholder="Masukkan password"
                   />
                 </div>
-                <!-- <small class="text-muted">Default: admin / admin123</small> -->
               </div>
 
               <button type="submit" class="btn btn-primary w-100">Masuk</button>

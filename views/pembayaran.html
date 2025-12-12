@@ -1,122 +1,374 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembayaran Laboratorium - Lab RS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .card { margin-top: 30px; }
-        @media print {
-            body * { visibility: hidden; }
-            #struk, #struk * { visibility: visible; }
-            #struk { position: absolute; top: 0; left: 0; width: 100%; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="card shadow">
-        <div class="card-header bg-info text-white">
-            <h4 class="mb-0">Form Pembayaran Laboratorium</h4>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pembayaran - MediLab</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard"
+          ><i class="fas fa-flask"></i> MediLab</a
+        >
+        <div class="navbar-nav">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/validasi-hasil">Validasi</a>
+          <a class="nav-link active" href="/pembayaran">Pembayaran</a>
+          <a class="nav-link" href="/total-biaya">Total Biaya</a>
+          <a class="nav-link" href="/logout">Logout</a>
         </div>
-        <div class="card-body">
-            <form id="formPembayaran">
-                <div class="mb-3">
-                    <label class="form-label">Nama Pasien</label>
-                    <input type="text" class="form-control" id="namaPasien" required>
-                </div>
+      </div>
+    </nav>
 
-                <div class="mb-3">
-                    <label class="form-label">Jenis Pemeriksaan</label>
-                    <select class="form-select" id="jenisPemeriksaan" required onchange="hitungBiaya()">
-                        <option value="">-- Pilih Pemeriksaan --</option>
-                        <option value="Darah Lengkap" data-harga="100000">Darah Lengkap - Rp 100.000</option>
-                        <option value="Glukosa Puasa" data-harga="50000">Glukosa Puasa - Rp 50.000</option>
-                        <option value="Kolesterol" data-harga="75000">Kolesterol - Rp 75.000</option>
-                    </select>
-                </div>
+    <div class="container mt-4">
+      <h3><i class="fas fa-money-bill-wave me-2"></i>Pembayaran Pemeriksaan</h3>
 
-                <div class="mb-3">
-                    <label class="form-label">Total Biaya</label>
-                    <input type="text" class="form-control" id="totalBiaya" readonly>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Metode Pembayaran</label>
-                    <select class="form-select" id="metodePembayaran" required>
-                        <option value="">-- Pilih Metode --</option>
-                        <option value="Tunai">Tunai</option>
-                        <option value="Transfer Bank">Transfer Bank</option>
-                        <option value="E-Wallet">E-Wallet</option>
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success w-50" onclick="bayar()">Bayar</button>
-                    <button type="button" class="btn btn-primary w-50" onclick="cetakStruk()">Cetak Struk</button>
-                </div>
-            </form>
-
-            <!-- Struk Pembayaran -->
-            <div id="struk" class="mt-4 p-3 border" style="display:none; background-color:white;">
-                <h5 class="text-center">Struk Pembayaran Laboratorium</h5>
-                <hr>
-                <p><strong>Nama Pasien:</strong> <span id="strukNama"></span></p>
-                <p><strong>Jenis Pemeriksaan:</strong> <span id="strukPemeriksaan"></span></p>
-                <p><strong>Total Biaya:</strong> <span id="strukBiaya"></span></p>
-                <p><strong>Metode Pembayaran:</strong> <span id="strukMetode"></span></p>
-                <p><strong>Tanggal:</strong> <span id="strukTanggal"></span></p>
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Daftar Pemeriksaan Menunggu Pembayaran</h5>
             </div>
-
+            <div class="card-body">
+              <table id="pendingPaymentsTable" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Kode Pemeriksaan</th>
+                    <th>Pasien</th>
+                    <th>Jenis Pemeriksaan</th>
+                    <th>Total Biaya</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Form Pembayaran</h5>
+            </div>
+            <div class="card-body">
+              <form id="paymentForm">
+                <div class="mb-3">
+                  <label>Kode Pemeriksaan</label>
+                  <select
+                    class="form-select"
+                    id="examinationCode"
+                    required
+                    onchange="loadExaminationDetails()"
+                  >
+                    <option value="">Pilih pemeriksaan</option>
+                  </select>
+                </div>
+
+                <div
+                  id="examinationDetails"
+                  class="mb-3 p-3 border rounded"
+                  style="display: none"
+                >
+                  <!-- Detail akan ditampilkan di sini -->
+                </div>
+
+                <div class="mb-3">
+                  <label>Metode Pembayaran</label>
+                  <select class="form-select" id="paymentMethod" required>
+                    <option value="">Pilih metode</option>
+                    <option value="Tunai">Tunai</option>
+                    <option value="Transfer Bank">Transfer Bank</option>
+                    <option value="E-Wallet">E-Wallet</option>
+                    <option value="BPJS">BPJS</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label>Total Bayar</label>
+                  <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="totalAmount"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Catatan (Opsional)</label>
+                  <textarea
+                    class="form-control"
+                    id="paymentNotes"
+                    rows="2"
+                  ></textarea>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn btn-success w-100"
+                  onclick="processPayment()"
+                >
+                  <i class="fas fa-check"></i> Proses Pembayaran
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Struk Pembayaran (Modal) -->
+      <div class="modal fade" id="receiptModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Struk Pembayaran</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body" id="receiptContent">
+              <!-- Struk akan diisi oleh JavaScript -->
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Tutup
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="printReceipt()"
+              >
+                <i class="fas fa-print"></i> Cetak
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<script>
-    const jenisPemeriksaan = document.getElementById('jenisPemeriksaan');
-    const totalBiaya = document.getElementById('totalBiaya');
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    function hitungBiaya() {
-        const selectedOption = jenisPemeriksaan.options[jenisPemeriksaan.selectedIndex];
-        const harga = selectedOption.getAttribute('data-harga');
-        totalBiaya.value = harga ? `Rp ${parseInt(harga).toLocaleString()}` : '';
-    }
+    <script>
+      let pendingExaminations = [];
+      let selectedExamination = null;
 
-    function bayar() {
-        const nama = document.getElementById('namaPasien').value;
-        const pemeriksaan = jenisPemeriksaan.value;
-        const biaya = totalBiaya.value;
-        const metode = document.getElementById('metodePembayaran').value;
+      // Harga pemeriksaan
+      const examinationPrices = {
+        "Darah Lengkap": 100000,
+        "Glukosa Puasa": 50000,
+        Kolesterol: 75000,
+        Hematologi: 120000,
+        "Kimia Klinik": 150000,
+        Mikrobiologi: 200000,
+        Imunologi: 180000,
+      };
 
-        if (!nama || !pemeriksaan || !biaya || !metode) {
-            alert("Harap lengkapi semua data pembayaran!");
-            return;
+      // Load data pemeriksaan yang belum bayar
+      function loadPendingPayments() {
+        $.ajax({
+          url: "/api/examinations",
+          method: "GET",
+          success: function (data) {
+            pendingExaminations = data.filter(
+              (exam) =>
+                exam.status === "completed" || exam.status === "validated"
+            );
+
+            let table = $("#pendingPaymentsTable").DataTable();
+            table.clear();
+
+            // Update dropdown
+            $("#examinationCode").html(
+              '<option value="">Pilih pemeriksaan</option>'
+            );
+
+            pendingExaminations.forEach(function (exam) {
+              let price = examinationPrices[exam.examination_type] || 100000;
+
+              table.row.add([
+                exam.examination_code,
+                exam.patient_name || "N/A",
+                exam.examination_type,
+                `Rp ${price.toLocaleString()}`,
+                `<span class="badge bg-warning">Belum Bayar</span>`,
+                `<button class="btn btn-sm btn-primary" onclick="selectExamination('${exam.examination_code}')">
+                                <i class="fas fa-money-bill"></i> Bayar
+                            </button>`,
+              ]);
+
+              // Tambah ke dropdown
+              $("#examinationCode").append(`
+                            <option value="${exam.examination_code}">${exam.examination_code} - ${exam.patient_name}</option>
+                        `);
+            });
+            table.draw();
+          },
+        });
+      }
+
+      // Pilih pemeriksaan dari dropdown
+      function loadExaminationDetails() {
+        let code = $("#examinationCode").val();
+        if (!code) {
+          $("#examinationDetails").hide();
+          return;
         }
 
-        alert(`Pembayaran pasien ${nama} untuk pemeriksaan ${pemeriksaan} sebesar ${biaya} berhasil melalui ${metode}.`);
-        
-        // Isi struk tanpa mencetak
-        document.getElementById('strukNama').innerText = nama;
-        document.getElementById('strukPemeriksaan').innerText = pemeriksaan;
-        document.getElementById('strukBiaya').innerText = biaya;
-        document.getElementById('strukMetode').innerText = metode;
-        document.getElementById('strukTanggal').innerText = new Date().toLocaleString();
-        document.getElementById('struk').style.display = 'block';
-    }
+        // Cari pemeriksaan
+        selectedExamination = pendingExaminations.find(
+          (exam) => exam.examination_code === code
+        );
 
-    function cetakStruk() {
-        const struk = document.getElementById('struk');
-        if (struk.style.display === 'none') {
-            alert("Silakan lakukan pembayaran terlebih dahulu!");
-            return;
+        if (selectedExamination) {
+          let price =
+            examinationPrices[selectedExamination.examination_type] || 100000;
+          let html = `
+                    <h6>Detail Pemeriksaan</h6>
+                    <p><strong>Pasien:</strong> ${
+                      selectedExamination.patient_name
+                    }</p>
+                    <p><strong>Jenis:</strong> ${
+                      selectedExamination.examination_type
+                    }</p>
+                    <p><strong>Tanggal:</strong> ${
+                      selectedExamination.examination_date
+                    }</p>
+                    <p><strong>Biaya:</strong> <span class="text-success fw-bold">Rp ${price.toLocaleString()}</span></p>
+                `;
+
+          $("#examinationDetails").html(html).show();
+          $("#totalAmount").val(price);
         }
+      }
+
+      // Pilih dari tabel
+      function selectExamination(code) {
+        $("#examinationCode").val(code);
+        loadExaminationDetails();
+        $("html, body").animate(
+          {
+            scrollTop: $("#paymentForm").offset().top - 100,
+          },
+          500
+        );
+      }
+
+      // Proses pembayaran
+      function processPayment() {
+        if (!selectedExamination) {
+          alert("Pilih pemeriksaan terlebih dahulu!");
+          return;
+        }
+
+        let paymentData = {
+          examination_id: selectedExamination.id,
+          total_amount: $("#totalAmount").val(),
+          payment_method: $("#paymentMethod").val(),
+          payment_date: new Date().toISOString().split("T")[0],
+          notes: $("#paymentNotes").val(),
+        };
+
+        $.ajax({
+          url: "/api/payment",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(paymentData),
+          success: function (response) {
+            if (response.success) {
+              showReceipt(paymentData);
+              loadPendingPayments();
+              $("#paymentForm")[0].reset();
+              $("#examinationDetails").hide();
+              selectedExamination = null;
+            } else {
+              alert("Gagal memproses pembayaran: " + response.message);
+            }
+          },
+        });
+      }
+
+      // Tampilkan struk
+      function showReceipt(paymentData) {
+        let price =
+          examinationPrices[selectedExamination.examination_type] || 100000;
+        let now = new Date();
+
+        let receiptHTML = `
+                <div style="font-family: monospace; text-align: center;">
+                    <h4>MEDILAB LABORATORIUM</h4>
+                    <p>Jl. Kesehatan No. 123, Jakarta</p>
+                    <hr>
+                    <p><strong>STRUK PEMBAYARAN</strong></p>
+                    <p>${now.toLocaleDateString()} ${now.toLocaleTimeString()}</p>
+                    <hr>
+                    <table style="width: 100%; text-align: left;">
+                        <tr><td>Kode Pemeriksaan</td><td>: ${
+                          selectedExamination.examination_code
+                        }</td></tr>
+                        <tr><td>Nama Pasien</td><td>: ${
+                          selectedExamination.patient_name
+                        }</td></tr>
+                        <tr><td>Jenis Pemeriksaan</td><td>: ${
+                          selectedExamination.examination_type
+                        }</td></tr>
+                        <tr><td>Metode Bayar</td><td>: ${
+                          paymentData.payment_method
+                        }</td></tr>
+                        <tr><td>Total Biaya</td><td>: Rp ${parseInt(
+                          paymentData.total_amount
+                        ).toLocaleString()}</td></tr>
+                    </table>
+                    <hr>
+                    <h5>TERIMA KASIH</h5>
+                    <p>Silahkan datang kembali</p>
+                </div>
+            `;
+
+        $("#receiptContent").html(receiptHTML);
+        $("#receiptModal").modal("show");
+      }
+
+      // Cetak struk
+      function printReceipt() {
+        let printContent = document.getElementById("receiptContent").innerHTML;
+        let originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printContent;
         window.print();
-    }
-</script>
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+      }
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+      $(document).ready(function () {
+        $("#pendingPaymentsTable").DataTable();
+        loadPendingPayments();
+      });
+    </script>
+  </body>
 </html>

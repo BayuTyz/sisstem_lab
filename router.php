@@ -1,228 +1,164 @@
-<?php
+// Tambahkan di initializeRoutes()
+'GET' => [
+    // ... routes yang sudah ada
+    '/api/examination/(\d+)' => 'getExaminationDetail',
+    '/api/payment/report' => 'getPaymentReport',
+],
 
-require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/models/User.php';
+'POST' => [
+    // ... routes yang sudah ada
+    '/api/examination/validate/(\d+)' => 'validateExamination',
+    '/api/payment' => 'createPayment',
+],
 
-// session_start();
+// Tambahkan handler methods
+private function getExaminationDetail($id) {
+    $this->requireAuth();
+    
+    $examModel = new Examination();
+    $examination = $examModel->getExaminationWithResults($id);
+    
+    $this->jsonResponse($examination);
+}
 
-class Router {
-    private $routes = [];
+private function validateExamination($id) {
+    $this->requireAuth();
     
-    public function __construct() {
-        $this->initializeRoutes();
-    }
+    $data = json_decode(file_get_contents('php://input'), true);
     
-    private function initializeRoutes() {
-        $this->routes = [
-            'GET' => [
-                '/' => 'login',
-                '/login' => 'login',
-                '/dashboard' => 'dashboard',
-                '/pasien' => 'pasien',
-                '/input-pemeriksaan' => 'inputPemeriksaan',
-                '/validasi-hasil' => 'validasiHasil',
-                '/pembayaran' => 'pembayaran',
-                '/total-biaya' => 'totalBiaya',
-                '/logout' => 'logout',
-                '/api/stats' => 'getStats', 
-            '/api/pasien' => 'getPasienData' 
-            ],
-            
-            'POST' => [
-                '/api/login' => 'apiLogin',
-                '/api/users' => 'apiCreateUser',
-                '/api/users/(\d+)' => 'apiUpdateUser',
-                '/api/users/delete/(\d+)' => 'apiDeleteUser'
-            ]
-        ];
-    }
+    // Simpan hasil ke database
+    $conn = Database::getInstance();
     
-    public function dispatch() {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    try {
+        $conn->beginTransaction();
         
-        foreach ($this->routes[$method] as $route => $handler) {
-            $pattern = str_replace('/', '\/', $route);
-            $pattern = '/^' . str_replace('(\d+)', '(\d+)', $pattern) . '$/';
-            
-            if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches);
-                return call_user_func_array([$this, $handler], $matches);
+        // Update status pemeriksaan
+        $sql = "UPDATE examinations SET status = 'validated' WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$id]);
+        
+        // Simpan hasil
+        if (isset($data['results'])) {
+            foreach ($data['results'] as $result) {
+                $sql = "INSERT INTO examination_results 
+                        (examination_id, parameter_name, result_value, normal_range, unit, status) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([
+                    $id,
+                    $result['parameter_name'],
+                    $result['result_value'],
+                    $result['normal_range'],
+                    $result['unit'] ?? '',
+                    $result['status']
+                ]);
             }
         }
         
-        $this->notFound();
-    }
-    
-    
-    private function login() {
-        if ($this->isLoggedIn()) {
-            header('Location: /dashboard');
-            exit;
-        }
-        $this->renderView('login.html');
-    }
-    
-    private function dashboard() {
-        $this->requireAuth();
-        $this->renderView('dashboard.html');
-    }
-    
-    private function pasien() {
-        $this->requireAuth();
-        $this->renderView('pasien.html');
-    }
-    
-    private function inputPemeriksaan() {
-        $this->requireAuth();
-        $this->renderView('inputpemeriksaan.html');
-    }
-    
-    private function validasiHasil() {
-        $this->requireAuth();
-        $this->renderView('validasihasil.html');
-    }
-    
-    private function pembayaran() {
-        $this->requireAuth();
-        $this->renderView('pembayaran.html');
-    }
-    
-    private function totalBiaya() {
-        $this->requireAuth();
-        $this->renderView('totalbiaya.html');
-    }
-    
-    private function logout() {
-        session_destroy();
-        header('Location: /login');
-        exit;
-    }
-    
-    private function apiLogin() {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $conn->commit();
         
-        if (empty($input['username']) || empty($input['password'])) {
-            $this->jsonResponse(['error' => 'Username dan password harus diisi'], 400);
-        }
-        
-        $userModel = new User();
-        $user = $userModel->login($input['username'], $input['password']);
-        
-        if ($user) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['logged_in'] = true;
-            
-            $this->jsonResponse([
-                'success' => true,
-                'user' => [
-                    'id' => $user['id'],
-                    'username' => $user['username'],
-                    'full_name' => $user['full_name'],
-                    'role' => $user['role']
-                ]
-            ]);
-        } else {
-            $this->jsonResponse(['error' => 'Username atau password salah'], 401);
-        }
-    }
-    
-    private function apiCreateUser() {
-        $this->requireAuth();
-        
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        $required = ['username', 'password', 'full_name', 'email'];
-        foreach ($required as $field) {
-            if (empty($input[$field])) {
-                $this->jsonResponse(['error' => "Field $field harus diisi"], 400);
-            }
-        }
-        
-        $userModel = new User();
-        $result = $userModel->register([
-            'username' => $input['username'],
-            'password' => $input['password'],
-            'full_name' => $input['full_name'],
-            'email' => $input['email'],
-            'role' => $input['role'] ?? 'user',
-            'phone' => $input['phone'] ?? null
+        $this->jsonResponse([
+            'success' => true,
+            'message' => 'Pemeriksaan berhasil divalidasi'
         ]);
-        
-        if ($result) {
-            $this->jsonResponse(['success' => true, 'message' => 'User berhasil dibuat']);
-        } else {
-            $this->jsonResponse(['error' => 'Gagal membuat user'], 500);
-        }
+    } catch(Exception $e) {
+        $conn->rollBack();
+        $this->jsonResponse([
+            'success' => false,
+            'message' => 'Gagal validasi: ' . $e->getMessage()
+        ], 500);
     }
+}
+
+private function createPayment() {
+    $this->requireAuth();
     
-    private function apiUpdateUser($id) {
-        $this->requireAuth();
-        
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        $userModel = new User();
-        
-        unset($input['id'], $input['created_at']);
-        
-        if (isset($input['password']) && empty($input['password'])) {
-            unset($input['password']);
-        }
-        
-        $result = $userModel->update($id, $input);
-        
-        if ($result) {
-            $this->jsonResponse(['success' => true, 'message' => 'User berhasil diupdate']);
-        } else {
-            $this->jsonResponse(['error' => 'Gagal mengupdate user'], 500);
-        }
-    }
+    $data = json_decode(file_get_contents('php://input'), true);
     
-    private function apiDeleteUser($id) {
-        $this->requireAuth();
-        
-        $userModel = new User();
-        $result = $userModel->delete($id);
-        
-        if ($result) {
-            $this->jsonResponse(['success' => true, 'message' => 'User berhasil dihapus']);
-        } else {
-            $this->jsonResponse(['error' => 'Gagal menghapus user'], 500);
-        }
-    }
+    $conn = Database::getInstance();
+    $sql = "INSERT INTO payments 
+            (examination_id, total_amount, payment_method, payment_date, payment_status, notes) 
+            VALUES (?, ?, ?, ?, 'paid', ?)";
+    $stmt = $conn->prepare($sql);
     
-    private function renderView($viewFile) {
-        $viewPath = __DIR__ . '/views/' . $viewFile;
-        
-        if (file_exists($viewPath)) {
-            readfile($viewPath);
-        } else {
-            $this->notFound();
-        }
-    }
+    $result = $stmt->execute([
+        $data['examination_id'],
+        $data['total_amount'],
+        $data['payment_method'],
+        $data['payment_date'],
+        $data['notes'] ?? ''
+    ]);
     
-    private function jsonResponse($data, $statusCode = 200) {
-        http_response_code($statusCode);
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
-    }
+    $this->jsonResponse([
+        'success' => $result,
+        'message' => $result ? 'Pembayaran berhasil diproses' : 'Gagal memproses pembayaran'
+    ]);
+}
+
+private function getPaymentReport() {
+    $this->requireAuth();
     
-    private function requireAuth() {
-        if (!$this->isLoggedIn()) {
-            $this->jsonResponse(['error' => 'Unauthorized'], 401);
-        }
-    }
+    $startDate = $_GET['start_date'] ?? date('Y-m-01');
+    $endDate = $_GET['end_date'] ?? date('Y-m-d');
     
-    private function isLoggedIn() {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-    }
+    $conn = Database::getInstance();
     
-    private function notFound() {
-        http_response_code(404);
-        echo "404 - Halaman tidak ditemukan";
-        exit;
-    }
+    // Get transactions
+    $sql = "SELECT p.*, e.examination_code, e.examination_type, pt.full_name as patient_name
+            FROM payments p
+            JOIN examinations e ON p.examination_id = e.id
+            JOIN patients pt ON e.patient_id = pt.id
+            WHERE p.payment_date BETWEEN ? AND ?
+            ORDER BY p.payment_date DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$startDate, $endDate]);
+    $transactions = $stmt->fetchAll();
+    
+    // Get statistics
+    $sql = "SELECT 
+            SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) as total_revenue,
+            COUNT(CASE WHEN payment_status = 'paid' THEN 1 END) as paid_count,
+            COUNT(CASE WHEN payment_status = 'unpaid' THEN 1 END) as unpaid_count,
+            AVG(total_amount) as avg_transaction
+            FROM payments
+            WHERE payment_date BETWEEN ? AND ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$startDate, $endDate]);
+    $stats = $stmt->fetch();
+    
+    // Get chart data (example: last 7 days)
+    $sql = "SELECT 
+            payment_date as date,
+            SUM(total_amount) as revenue
+            FROM payments
+            WHERE payment_date BETWEEN DATE_SUB(?, INTERVAL 7 DAY) AND ?
+            AND payment_status = 'paid'
+            GROUP BY payment_date
+            ORDER BY payment_date";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$endDate, $endDate]);
+    $chartData = $stmt->fetchAll();
+    
+    // Get payment method distribution
+    $sql = "SELECT 
+            payment_method,
+            COUNT(*) as count,
+            SUM(total_amount) as amount
+            FROM payments
+            WHERE payment_date BETWEEN ? AND ?
+            GROUP BY payment_method";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$startDate, $endDate]);
+    $methods = $stmt->fetchAll();
+    
+    $this->jsonResponse([
+        'transactions' => $transactions,
+        'stats' => $stats,
+        'chart_data' => [
+            'labels' => array_column($chartData, 'date'),
+            'revenue' => array_column($chartData, 'revenue'),
+            'method_labels' => array_column($methods, 'payment_method'),
+            'method_data' => array_column($methods, 'count')
+        ]
+    ]);
 }

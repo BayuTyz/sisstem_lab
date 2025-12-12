@@ -1,52 +1,57 @@
 <?php
+// models/User.php
 
-require_once __DIR__ . '/BaseModel.php';
-
-class User extends BaseModel {
-    protected $table = 'users';
+class User {
+    private $conn;
     
     public function __construct() {
-        parent::__construct();
+        $this->conn = Database::getInstance();
     }
+    
     public function login($username, $password) {
-        $user = $this->findOne('username = :username AND status = "active"', [
-            ':username' => $username
-        ]);
+        $sql = "SELECT * FROM users WHERE username = ? AND password = ? AND status = 'active'";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$username, $password]);
         
-        if ($user && password_verify($password, $user['password'])) {
-
-            $this->update($user['id'], ['last_login' => date('Y-m-d H:i:s')]);
-            return $user;
-        }
-        
-        return false;
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    public function register($data) {
-
-        if (isset($data['password'])) {
-            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        }
-        
-        $data['created_at'] = date('Y-m-d H:i:s');
-        $data['status'] = $data['status'] ?? 'active';
-        
-        return $this->create($data);
-    }
-    
-    public function getActiveUsers() {
-        return $this->getAll('status = "active"');
-    }
-    
-    public function search($keyword) {
-        $sql = "SELECT * FROM {$this->table} 
-                WHERE username LIKE :keyword 
-                OR email LIKE :keyword";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':keyword' => "%$keyword%"]);
-        
+    public function getAllUsers() {
+        $sql = "SELECT * FROM users ORDER BY created_at DESC";
+        $stmt = $this->conn->query($sql);
         return $stmt->fetchAll();
     }
     
+    public function createUser($data) {
+        $sql = "INSERT INTO users (username, password, full_name, email, role) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['username'],
+            $data['password'],
+            $data['full_name'],
+            $data['email'],
+            $data['role']
+        ]);
+    }
+    
+    public function updateUser($id, $data) {
+        $sql = "UPDATE users SET username = ?, full_name = ?, email = ?, role = ? 
+                WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['username'],
+            $data['full_name'],
+            $data['email'],
+            $data['role'],
+            $id
+        ]);
+    }
+    
+    public function deleteUser($id) {
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id]);
+    }
 }
+?>

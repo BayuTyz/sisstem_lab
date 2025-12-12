@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Admin - MediLab</title>
+    <title>Dashboard - MediLab</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,500 +12,159 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      body {
-        font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-      }
-      .navbar {
-        background: linear-gradient(
-          135deg,
-          #667eea 0%,
-          #764ba2 100%
-        ) !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .sidebar {
-        background: #fff;
-        min-height: 100vh;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 250px;
-        z-index: 1000;
-        transition: transform 0.3s ease;
-      }
-      .main-content {
-        margin-left: 250px;
-        transition: margin-left 0.3s ease;
-      }
-      .main-content.expanded {
-        margin-left: 0;
-      }
-      .card {
-        border: none;
+      .stats-card {
         border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-      }
-      .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
         color: white;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       }
-      .btn-custom {
+      .card-1 {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 10px;
-        transition: all 0.3s ease;
       }
-      .btn-custom:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      .card-2 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       }
-      .table th {
-        background: #f8f9fa;
-        font-weight: 600;
+      .card-3 {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
       }
-      .logo-img {
-        width: 40px;
-        margin-right: 10px;
-      }
-      @media (max-width: 768px) {
-        .sidebar {
-          transform: translateX(-250px);
-        }
-        .main-content {
-          margin-left: 0;
-        }
-        .sidebar.show {
-          transform: translateX(0);
-        }
+      .card-4 {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
       }
     </style>
   </head>
-
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container-fluid">
-        <button class="btn btn-outline-light me-3 d-lg-none" id="sidebarToggle">
-          <i class="fas fa-bars"></i>
-        </button>
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-            alt="Logo MediLab"
-            class="logo-img"
-          />
-          MediLab Dashboard
-        </a>
-        <div class="d-flex">
-          <span class="navbar-text me-3">
-            Selamat Datang,
-            <strong><?php echo $_SESSION['full_name'] ?? 'Admin'; ?></strong>
-            (<?php echo $_SESSION['role'] ?? 'admin'; ?>)
-          </span>
-          <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard"
+          ><i class="fas fa-flask"></i> MediLab</a
+        >
+        <div class="navbar-nav ms-auto">
+          <span class="nav-link"
+            >Welcome,
+            <?php echo $_SESSION['full_name']; ?>!</span
+          >
+          <a class="nav-link" href="/logout">Logout</a>
         </div>
       </div>
     </nav>
 
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-      <div class="p-3">
-        <h5 class="text-center mb-4">Menu Navigasi</h5>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="/dashboard">
-              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/input-pemeriksaan">
-              <i class="fas fa-upload me-2"></i>Input Pemeriksaan
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/pasien">
-              <i class="fas fa-users me-2"></i>Data Pasien
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/validasi-hasil">
-              <i class="fas fa-check-circle me-2"></i>Validasi Hasil
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/pembayaran">
-              <i class="fas fa-money-bill-wave me-2"></i>Pembayaran
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/total-biaya">
-              <i class="fas fa-calculator me-2"></i>Total Biaya
-            </a>
-          </li>
-        </ul>
+    <!-- Stats -->
+    <div class="container mt-4">
+      <h3>Dashboard</h3>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stats-card card-1">
+            <h5>Total Pasien</h5>
+            <h2><?php echo $stats['total_pasien'] ?? 0; ?></h2>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card card-2">
+            <h5>Pasien Baru (Hari Ini)</h5>
+            <h2><?php echo $stats['pasien_baru_hari_ini'] ?? 0; ?></h2>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card card-3">
+            <h5>Pemeriksaan (Hari Ini)</h5>
+            <h2><?php echo $stats['pemeriksaan_hari_ini'] ?? 0; ?></h2>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card card-4">
+            <h5>Total Pendapatan</h5>
+            <h2>Rp 12.5M</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Patients -->
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h5>Pasien Terbaru</h5>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID Pasien</th>
+                    <th>Nama</th>
+                    <th>Gender</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach($patients as $p): ?>
+                  <tr>
+                    <td><?php echo $p['patient_id']; ?></td>
+                    <td><?php echo $p['full_name']; ?></td>
+                    <td><?php echo $p['gender']; ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Examinations -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h5>Pemeriksaan Terbaru</h5>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Kode</th>
+                    <th>Jenis</th>
+                    <th>Tanggal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach($examinations as $e): ?>
+                  <tr>
+                    <td><?php echo $e['examination_code']; ?></td>
+                    <td><?php echo $e['examination_type']; ?></td>
+                    <td><?php echo $e['examination_date']; ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+              <a href="/pasien" class="btn btn-primary me-2">
+                <i class="fas fa-users"></i> Kelola Pasien
+              </a>
+              <a href="/input-pemeriksaan" class="btn btn-success me-2">
+                <i class="fas fa-plus"></i> Input Pemeriksaan
+              </a>
+              <a href="/pembayaran" class="btn btn-warning me-2">
+                <i class="fas fa-money-bill"></i> Pembayaran
+              </a>
+              <a href="/validasi-hasil" class="btn btn-info">
+                <i class="fas fa-check-circle"></i> Validasi Hasil
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-      <div class="container-fluid py-4">
-        <!-- Welcome Section -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="card p-4">
-              <h3 class="mb-2">
-                <i class="fas fa-home me-2"></i>Selamat Datang di Dashboard
-                MediLab
-              </h3>
-              <p class="text-muted">
-                Kelola data laboratorium, pantau statistik, dan akses fitur
-                utama dengan mudah.
-              </p>
-              <p class="mb-0">
-                <strong>Login Time:</strong>
-                <?php echo date('d-m-Y H:i:s'); ?>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-          <div class="col-md-3 mb-3">
-            <div class="card stat-card text-center p-4">
-              <i class="fas fa-users fa-2x mb-2"></i>
-              <h4 id="totalPasien">Loading...</h4>
-              <p>Total Pasien</p>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card stat-card text-center p-4">
-              <i class="fas fa-flask fa-2x mb-2"></i>
-              <h4 id="totalPemeriksaan">Loading...</h4>
-              <p>Total Pemeriksaan</p>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card stat-card text-center p-4">
-              <i class="fas fa-check-circle fa-2x mb-2"></i>
-              <h4 id="pendingValidasi">Loading...</h4>
-              <p>Pending Validasi</p>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card stat-card text-center p-4">
-              <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
-              <h4 id="totalPendapatan">Loading...</h4>
-              <p>Total Pendapatan</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <h4><i class="fas fa-bolt me-2"></i>Aksi Cepat</h4>
-          </div>
-          <div class="col-md-3 mb-3">
-            <a href="/input-pemeriksaan" class="text-decoration-none">
-              <div class="card text-center p-4 btn-custom text-white">
-                <i class="fas fa-upload fa-3x mb-3"></i>
-                <h5>Input Pemeriksaan</h5>
-                <p>Input hasil lab baru</p>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 mb-3">
-            <a href="/pasien" class="text-decoration-none">
-              <div class="card text-center p-4 btn-custom text-white">
-                <i class="fas fa-user-plus fa-3x mb-3"></i>
-                <h5>Tambah Pasien</h5>
-                <p>Daftarkan pasien baru</p>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 mb-3">
-            <a href="/validasi-hasil" class="text-decoration-none">
-              <div class="card text-center p-4 btn-custom text-white">
-                <i class="fas fa-check-circle fa-3x mb-3"></i>
-                <h5>Validasi Hasil</h5>
-                <p>Validasi hasil pemeriksaan</p>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-3 mb-3">
-            <a href="/pembayaran" class="text-decoration-none">
-              <div class="card text-center p-4 btn-custom text-white">
-                <i class="fas fa-credit-card fa-3x mb-3"></i>
-                <h5>Pembayaran</h5>
-                <p>Proses pembayaran</p>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- Recent Patients Table -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="card p-4">
-              <div
-                class="d-flex justify-content-between align-items-center mb-3"
-              >
-                <h4 class="mb-0">
-                  <i class="fas fa-list me-2"></i>Pasien Terbaru
-                </h4>
-                <a href="/pasien" class="btn btn-primary btn-sm">Lihat Semua</a>
-              </div>
-
-              <div class="table-responsive">
-                <table class="table table-striped" id="pasienTable">
-                  <thead>
-                    <tr>
-                      <th>ID Pasien</th>
-                      <th>Nama</th>
-                      <th>Jenis Kelamin</th>
-                      <th>Tanggal Lahir</th>
-                      <th>Status</th>
-                      <th>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!-- Data akan di-load via JavaScript -->
-                    <tr>
-                      <td colspan="6" class="text-center">Memuat data...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- System Info -->
-        <div class="row">
-          <div class="col-md-6">
-            <div class="card p-4">
-              <h5><i class="fas fa-info-circle me-2"></i>Informasi Sistem</h5>
-              <ul class="list-unstyled">
-                <li><strong>Versi:</strong> MediLab v1.0</li>
-                <li>
-                  <strong>Server:</strong>
-                  <?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Local'; ?>
-                </li>
-                <li>
-                  <strong>PHP:</strong>
-                  <?php echo phpversion(); ?>
-                </li>
-                <li>
-                  <strong>User Role:</strong>
-                  <?php echo $_SESSION['role'] ?? 'admin'; ?>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-4">
-              <h5><i class="fas fa-chart-line me-2"></i>Statistik Hari Ini</h5>
-              <ul class="list-unstyled">
-                <li>
-                  Login berhasil:
-                  <?php echo date('H:i:s'); ?>
-                </li>
-                <li>Sesi aktif: <span id="sessionTimer">0</span> detik</li>
-                <li>
-                  Waktu server:
-                  <span id="serverTime"><?php echo date('H:i:s'); ?></span>
-                </li>
-                <li>Browser: <span id="browserInfo">Detecting...</span></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center py-3 mt-4">
-          <p class="text-muted">
-            &copy;
-            <?php echo date('Y'); ?>
-            MediLab. Sistem Laboratorium Medis.
-            <br />
-            <small
-              >User:
-              <?php echo $_SESSION['username'] ?? 'admin'; ?>
-              | Login:
-              <?php echo date('d-m-Y'); ?></small
-            >
-          </p>
-        </footer>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Toggle Sidebar
-      document
-        .getElementById("sidebarToggle")
-        .addEventListener("click", function () {
-          const sidebar = document.getElementById("sidebar");
-          const mainContent = document.getElementById("mainContent");
-          sidebar.classList.toggle("show");
-          mainContent.classList.toggle("expanded");
-        });
-
-      // Update statistics (simulasi data)
-      document.addEventListener("DOMContentLoaded", function () {
-        // Simulasi data dari database
-        setTimeout(() => {
-          document.getElementById("totalPasien").textContent = "1,250";
-          document.getElementById("totalPemeriksaan").textContent = "450";
-          document.getElementById("pendingValidasi").textContent = "23";
-          document.getElementById("totalPendapatan").textContent = "Rp 12.5M";
-        }, 1000);
-
-        // Load pasien data
-        loadPasienData();
-
-        // Update waktu
-        updateServerTime();
-        startSessionTimer();
-        detectBrowser();
-      });
-
-      function loadPasienData() {
-        // Simulasi data pasien dari database
-        const pasienData = [
-          {
-            id: "P001",
-            nama: "Ahmad Surya",
-            gender: "Laki-laki",
-            dob: "15-05-1985",
-            status: "Aktif",
-          },
-          {
-            id: "P002",
-            nama: "Siti Aminah",
-            gender: "Perempuan",
-            dob: "22-11-1990",
-            status: "Menunggu",
-          },
-          {
-            id: "P003",
-            nama: "Budi Santoso",
-            gender: "Laki-laki",
-            dob: "10-03-1978",
-            status: "Aktif",
-          },
-          {
-            id: "P004",
-            nama: "Dewi Lestari",
-            gender: "Perempuan",
-            dob: "05-08-1995",
-            status: "Selesai",
-          },
-          {
-            id: "P005",
-            nama: "Joko Widodo",
-            gender: "Laki-laki",
-            dob: "21-06-1961",
-            status: "Aktif",
-          },
-        ];
-
-        const tbody = document.querySelector("#pasienTable tbody");
-        tbody.innerHTML = "";
-
-        pasienData.forEach((pasien) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${pasien.id}</td>
-            <td><strong>${pasien.nama}</strong></td>
-            <td>${pasien.gender}</td>
-            <td>${pasien.dob}</td>
-            <td>
-              <span class="badge ${getStatusBadge(pasien.status)}">
-                ${pasien.status}
-              </span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-primary" onclick="viewDetail('${
-                pasien.id
-              }')">
-                <i class="fas fa-eye"></i> Detail
-              </button>
-            </td>
-          `;
-          tbody.appendChild(row);
-        });
-      }
-
-      function getStatusBadge(status) {
-        switch (status.toLowerCase()) {
-          case "aktif":
-            return "bg-success";
-          case "menunggu":
-            return "bg-warning";
-          case "selesai":
-            return "bg-info";
-          default:
-            return "bg-secondary";
-        }
-      }
-
-      function viewDetail(id) {
-        alert(`Detail pasien ${id} akan ditampilkan`);
-        // Di sini bisa redirect ke detail pasien
-        // window.location.href = `/pasien/detail/${id}`;
-      }
-
-      function updateServerTime() {
-        const now = new Date();
-        document.getElementById("serverTime").textContent =
-          now.toLocaleTimeString("id-ID");
-        setTimeout(updateServerTime, 1000);
-      }
-
-      function startSessionTimer() {
-        let seconds = 0;
-        setInterval(() => {
-          seconds++;
-          const hours = Math.floor(seconds / 3600);
-          const minutes = Math.floor((seconds % 3600) / 60);
-          const secs = seconds % 60;
-          document.getElementById("sessionTimer").textContent = `${hours
-            .toString()
-            .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs
-            .toString()
-            .padStart(2, "0")}`;
-        }, 1000);
-      }
-
-      function detectBrowser() {
-        const ua = navigator.userAgent;
-        let browser = "Unknown";
-
-        if (ua.includes("Chrome")) browser = "Google Chrome";
-        else if (ua.includes("Firefox")) browser = "Mozilla Firefox";
-        else if (ua.includes("Safari") && !ua.includes("Chrome"))
-          browser = "Safari";
-        else if (ua.includes("Edg")) browser = "Microsoft Edge";
-        else if (ua.includes("MSIE") || ua.includes("Trident"))
-          browser = "Internet Explorer";
-
-        document.getElementById("browserInfo").textContent = browser;
-      }
-    </script>
   </body>
 </html>

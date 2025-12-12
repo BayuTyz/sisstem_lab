@@ -1,310 +1,389 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasil Laboratorium - MediLab</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Validasi Hasil - MediLab</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .hero-section {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%), url('https://picsum.photos/1920/1080?random=13');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-            position: relative;
-        }
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-        .hero-section .container {
-            position: relative;
-            z-index: 2;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
-            margin-top: 30px;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-        .card-header {
-            background-color: #0d6efd; /* bg-primary */
-            color: white;
-            font-weight: 700;
-        }
-        .table {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .table thead {
-            background-color: #212529; /* table-dark */
-            color: white;
-        }
-        .btn-primary {
-            background-color: #0d6efd; /* btn-primary */
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
-        }
-        .btn-success {
-            background-color: #198754; /* btn-success */
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .btn-success:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);
-        }
-        .section-title {
-            font-weight: 700;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 3px;
-            background: #667eea;
-            border-radius: 2px;
-        }
-        .footer {
-            background: #343a40;
-            color: white;
-        }
-        @media print {
-            .btn, .navbar, .hero-section { display: none; }
-            body { background: white; }
-        }
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 50px 0;
-            }
-        }
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+      .pending {
+        background: #ffc107;
+        color: #000;
+      }
+      .completed {
+        background: #198754;
+        color: white;
+      }
+      .validated {
+        background: #0d6efd;
+        color: white;
+      }
     </style>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#"><i class="fas fa-flask me-2"></i>MediLab</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#home"><i class="fas fa-home me-1"></i>Beranda</a></li>
-                <li class="nav-item"><a class="nav-link" href="#hasil"><i class="fas fa-file-alt me-1"></i>Hasil Lab</a></li>
-                <li class="nav-item"><a class="nav-link" href="#kontak"><i class="fas fa-phone me-1"></i>Kontak</a></li>
-            </ul>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard"
+          ><i class="fas fa-flask"></i> MediLab</a
+        >
+        <div class="navbar-nav">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/pasien">Pasien</a>
+          <a class="nav-link active" href="/validasi-hasil">Validasi</a>
+          <a class="nav-link" href="/pembayaran">Pembayaran</a>
+          <a class="nav-link" href="/logout">Logout</a>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<!-- HERO -->
-<section class="hero-section" id="home">
-    <div class="container">
-        <h1 class="display-4 fw-bold">Hasil Laboratorium Pasien</h1>
-        <p class="lead fs-5">Lihat dan cetak hasil pemeriksaan laboratorium Anda dengan mudah dan akurat.</p>
-        <a href="#hasil" class="btn btn-light btn-lg mt-3"><i class="fas fa-arrow-down me-2"></i>Lihat Hasil</a>
-    </div>
-</section>
+    <div class="container mt-4">
+      <h3>
+        <i class="fas fa-check-circle me-2"></i>Validasi Hasil Pemeriksaan
+      </h3>
 
-<!-- Hasil Laboratorium Pasien -->
-<section id="hasil" class="py-5">
-    <div class="container">
-        <h2 class="text-center section-title">Hasil Laboratorium Pasien</h2>
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="fas fa-file-medical me-2"></i>Hasil Laboratorium Pasien</h4>
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="mb-0">Daftar Pemeriksaan Menunggu Validasi</h5>
+        </div>
+        <div class="card-body">
+          <table id="examinationsTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Kode Pemeriksaan</th>
+                <th>Pasien</th>
+                <th>Jenis Pemeriksaan</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi oleh JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Detail & Validasi -->
+      <div class="modal fade" id="validationModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Validasi Hasil Pemeriksaan</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="validationDetails">
+                <!-- Detail akan diisi oleh JavaScript -->
+              </div>
+
+              <hr />
+              <h5>Tambah Hasil Pemeriksaan</h5>
+              <form id="resultForm">
+                <input type="hidden" id="examinationId" />
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label>Parameter</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="parameterName"
+                        required
+                      />
                     </div>
-                    <div class="card-body" id="hasilLab">
-
-                        <!-- Data Pasien -->
-                        <h5 class="mb-3"><i class="fas fa-user me-2"></i>Data Pasien</h5>
-                        <div class="table-responsive">
-                            <table class="table table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <th width="30%"><i class="fas fa-user-tag me-2"></i>Nama Pasien</th>
-                                        <td>Ahmad Santoso</td>
-                                    </tr>
-                                    <tr>
-                                        <th><i class="fas fa-id-card me-2"></i>Nomor Rekam Medis</th>
-                                        <td>RM-00123</td>
-                                    </tr>
-                                    <tr>
-                                        <th><i class="fas fa-birthday-cake me-2"></i>Usia</th>
-                                        <td>35 Tahun</td>
-                                    </tr>
-                                    <tr>
-                                        <th><i class="fas fa-venus-mars me-2"></i>Jenis Kelamin</th>
-                                        <td>Laki-laki</td>
-                                    </tr>
-                                    <tr>
-                                        <th><i class="fas fa-calendar-alt me-2"></i>Tanggal Pemeriksaan</th>
-                                        <td>2025-11-25</td>
-                                    </tr>
-                                    <tr>
-                                        <th><i class="fas fa-user-md me-2"></i>Dokter Pengirim</th>
-                                        <td>Dr. Zatta Ilya</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Hasil Pemeriksaan -->
-                        <h5 class="mt-4 mb-3"><i class="fas fa-flask me-2"></i>Hasil Pemeriksaan</h5>
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th><i class="fas fa-microscope me-2"></i>Jenis Pemeriksaan</th>
-                                        <th><i class="fas fa-chart-bar me-2"></i>Hasil</th>
-                                        <th><i class="fas fa-check-circle me-2"></i>Nilai Normal</th>
-                                        <th><i class="fas fa-info-circle me-2"></i>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Darah Lengkap (Hematologi)</td>
-                                        <td>
-                                            Hemoglobin: 14 g/dL<br>
-                                            Leukosit: 7000 /µL<br>
-                                            Trombosit: 250000 /µL
-                                        </td>
-                                        <td>
-                                            Hb: 13-17 g/dL<br>
-                                            Leukosit: 4000-11000 /µL<br>
-                                            Trombosit: 150000-450000 /µL
-                                        </td>
-                                        <td><span class="badge bg-success">Normal</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Glukosa Puasa</td>
-                                        <td>90 mg/dL</td>
-                                        <td>70-100 mg/dL</td>
-                                        <td><span class="badge bg-success">Normal</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kolesterol Total</td>
-                                        <td>180 mg/dL</td>
-                                        <td><200 mg/dL</td>
-                                        <td><span class="badge bg-success">Normal</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Catatan Tambahan -->
-                        <h5 class="mt-4 mb-3"><i class="fas fa-sticky-note me-2"></i>Catatan</h5>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>Pemeriksaan normal. Tidak ada kelainan signifikan. Dianjurkan untuk kontrol rutin setiap 6 bulan.
-                        </div>
-
-                        <!-- Kesimpulan dan Rekomendasi -->
-                        <h5 class="mt-4 mb-3"><i class="fas fa-clipboard-check me-2"></i>Kesimpulan</h5>
-                        <p>Hasil pemeriksaan menunjukkan kondisi kesehatan yang baik. Semua parameter dalam batas normal.</p>
-
-                        <h5 class="mt-4 mb-3"><i class="fas fa-lightbulb me-2"></i>Rekomendasi</h5>
-                        <ul>
-                            <li>Jaga pola makan seimbang dan olahraga teratur.</li>
-                            <li>Kontrol kesehatan rutin setiap 6 bulan.</li>
-                            <li>Jika ada gejala tidak normal, segera konsultasi ke dokter.</li>
-                        </ul>
-
-                        <!-- Tombol Aksi -->
-                        <div class="text-center mt-4">
-                            <button class="btn btn-primary me-2" onclick="window.print()"><i class="fas fa-print me-2"></i>Cetak Hasil</button>
-                            <button class="btn btn-success" onclick="sendToDoctor()"><i class="fas fa-envelope me-2"></i>Kirim ke Dokter</button>
-                        </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="mb-3">
+                      <label>Hasil</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="resultValue"
+                        required
+                      />
                     </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="mb-3">
+                      <label>Nilai Normal</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="normalRange"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="mb-3">
+                      <label>Satuan</label>
+                      <input type="text" class="form-control" id="unit" />
+                    </div>
+                  </div>
                 </div>
+                <div class="mb-3">
+                  <label>Status</label>
+                  <select class="form-select" id="resultStatus" required>
+                    <option value="normal">Normal</option>
+                    <option value="abnormal">Abnormal</option>
+                    <option value="critical">Kritis</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="addResult()"
+                >
+                  <i class="fas fa-plus"></i> Tambah Hasil
+                </button>
+              </form>
+
+              <div class="mt-4">
+                <h5>Hasil yang Sudah Ditambahkan</h5>
+                <table class="table table-sm" id="resultsTable">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Hasil</th>
+                      <th>Normal</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Hasil akan ditambahkan dinamis -->
+                  </tbody>
+                </table>
+              </div>
             </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Tutup
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="validateExamination()"
+              >
+                <i class="fas fa-check"></i> Validasi Selesai
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</section>
 
-<!-- KONTAK -->
-<section id="kontak" class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="container text-center">
-        <h2 class="section-title">Kontak MediLab</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
-                <h5>Alamat</h5>
-                <p>Jl. Kesehatan No. 123, Jakarta</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-phone fa-3x mb-3"></i>
-                <h5>Telepon</h5>
-                <p>(021) 555-1234</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-envelope fa-3x mb-3"></i>
-                <h5>Email</h5>
-                <p>info@medilab.com</p>
-            </div>
-        </div>
-    </div>
-</section>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-<!-- FOOTER -->
-<footer class="footer text-center py-4">
-    <div class="container">
-        <p>&copy; 2025 MediLab. Semua hak dilindungi. | Dibuat dengan <i class="fas fa-heart text-danger"></i> menggunakan Bootstrap</p>
-    </div>
-</footer>
+    <script>
+      let currentExaminationId = null;
+      let results = [];
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Fungsi untuk kirim ke dokter (simulasi)
-    function sendToDoctor() {
-        alert('Hasil laboratorium telah dikirim ke email dokter pengirim. Terima kasih!');
-        // Dalam praktik nyata, ini akan mengirim email atau notifikasi.
-    }
-</script>
-</body>
+      // Load data pemeriksaan
+      function loadExaminations() {
+        $.ajax({
+          url: "/api/examinations",
+          method: "GET",
+          success: function (data) {
+            let table = $("#examinationsTable").DataTable();
+            table.clear();
+            data.forEach(function (exam) {
+              let statusClass = "";
+              let statusText = "";
+              switch (exam.status) {
+                case "pending":
+                  statusClass = "pending";
+                  statusText = "Menunggu";
+                  break;
+                case "completed":
+                  statusClass = "completed";
+                  statusText = "Selesai";
+                  break;
+                case "validated":
+                  statusClass = "validated";
+                  statusText = "Tervalidasi";
+                  break;
+                default:
+                  statusClass = "pending";
+                  statusText = exam.status;
+              }
+
+              table.row.add([
+                exam.examination_code,
+                exam.patient_name || "N/A",
+                exam.examination_type,
+                exam.examination_date,
+                `<span class="status-badge ${statusClass}">${statusText}</span>`,
+                `<button class="btn btn-sm btn-info" onclick="showValidation(${
+                  exam.id
+                })">
+                                <i class="fas fa-eye"></i> Lihat
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="editExamination(${
+                              exam.id
+                            })" ${
+                  exam.status === "validated" ? "disabled" : ""
+                }>
+                                <i class="fas fa-edit"></i> Edit
+                            </button>`,
+              ]);
+            });
+            table.draw();
+          },
+        });
+      }
+
+      // Tampilkan modal validasi
+      function showValidation(id) {
+        currentExaminationId = id;
+        results = [];
+
+        $.ajax({
+          url: `/api/examination/${id}`, // Buat endpoint baru di router
+          method: "GET",
+          success: function (data) {
+            let html = `
+                        <h5>Data Pemeriksaan</h5>
+                        <table class="table table-sm">
+                            <tr><th>Kode</th><td>${
+                              data.examination_code
+                            }</td></tr>
+                            <tr><th>Pasien</th><td>${
+                              data.full_name || "N/A"
+                            }</td></tr>
+                            <tr><th>Jenis</th><td>${
+                              data.examination_type
+                            }</td></tr>
+                            <tr><th>Dokter</th><td>${
+                              data.doctor_name || "-"
+                            }</td></tr>
+                            <tr><th>Tanggal</th><td>${
+                              data.examination_date
+                            }</td></tr>
+                        </table>
+                    `;
+            $("#validationDetails").html(html);
+            $("#examinationId").val(id);
+
+            // Tampilkan hasil yang sudah ada
+            if (data.results && data.results.length > 0) {
+              results = data.results;
+              updateResultsTable();
+            }
+
+            $("#validationModal").modal("show");
+          },
+        });
+      }
+
+      // Tambah hasil pemeriksaan
+      function addResult() {
+        let result = {
+          parameter_name: $("#parameterName").val(),
+          result_value: $("#resultValue").val(),
+          normal_range: $("#normalRange").val(),
+          unit: $("#unit").val(),
+          status: $("#resultStatus").val(),
+        };
+
+        results.push(result);
+        updateResultsTable();
+        $("#resultForm")[0].reset();
+      }
+
+      // Update tabel hasil
+      function updateResultsTable() {
+        let table = $("#resultsTable tbody");
+        table.empty();
+
+        results.forEach(function (result, index) {
+          let statusBadge = "";
+          switch (result.status) {
+            case "normal":
+              statusBadge = '<span class="badge bg-success">Normal</span>';
+              break;
+            case "abnormal":
+              statusBadge = '<span class="badge bg-warning">Abnormal</span>';
+              break;
+            case "critical":
+              statusBadge = '<span class="badge bg-danger">Kritis</span>';
+              break;
+          }
+
+          table.append(`
+                    <tr>
+                        <td>${result.parameter_name}</td>
+                        <td>${result.result_value} ${result.unit || ""}</td>
+                        <td>${result.normal_range}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="removeResult(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+        });
+      }
+
+      // Hapus hasil
+      function removeResult(index) {
+        results.splice(index, 1);
+        updateResultsTable();
+      }
+
+      // Validasi pemeriksaan
+      function validateExamination() {
+        if (results.length === 0) {
+          alert("Harap tambahkan hasil pemeriksaan terlebih dahulu!");
+          return;
+        }
+
+        if (confirm("Apakah Anda yakin ingin menyelesaikan validasi?")) {
+          $.ajax({
+            url: `/api/examination/validate/${currentExaminationId}`,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ results: results }),
+            success: function (response) {
+              alert(response.message);
+              $("#validationModal").modal("hide");
+              loadExaminations();
+            },
+          });
+        }
+      }
+
+      $(document).ready(function () {
+        $("#examinationsTable").DataTable();
+        loadExaminations();
+      });
+    </script>
+  </body>
 </html>
