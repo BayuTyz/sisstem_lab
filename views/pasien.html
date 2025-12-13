@@ -2,6 +2,7 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Pasien - MediLab</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -11,206 +12,1210 @@
       href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Semua style CSS tetap sama persis */
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 100%
+        ) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 250px;
+        z-index: 1030;
+        transition: left 0.3s ease;
+      }
+      .navbar.expanded {
+        left: 0;
+      }
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        z-index: 1040;
+        transition: transform 0.3s ease;
+        padding-top: 70px;
+      }
+      .sidebar.collapsed {
+        transform: translateX(-250px);
+      }
+      .main-content {
+        margin-left: 250px;
+        margin-top: 70px;
+        transition: margin-left 0.3s ease;
+        padding: 30px;
+        min-height: calc(100vh - 70px);
+      }
+      .main-content.expanded {
+        margin-left: 0;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 25px;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      .btn-outline-primary {
+        border: 2px solid #667eea;
+        color: #667eea;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-outline-primary:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.05);
+      }
+      .table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+      .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .table th {
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+      }
+      .table td {
+        vertical-align: middle;
+        padding: 15px;
+      }
+      .section-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        position: relative;
+        color: #333;
+        display: flex;
+        align-items: center;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: #667eea;
+        border-radius: 2px;
+      }
+      .logo-img {
+        width: 40px;
+        margin-right: 10px;
+      }
+      .sidebar-link {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+        text-decoration: none;
+        display: block;
+      }
+      .sidebar-link:hover,
+      .sidebar-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .sidebar-link i {
+        width: 25px;
+        text-align: center;
+        margin-right: 10px;
+      }
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .header-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-left: 5px solid #667eea;
+        padding: 25px;
+        margin-bottom: 30px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+      .modal-content {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      }
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+      }
+      .form-control {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+      }
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+      .form-label {
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 8px;
+      }
+      .input-group-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px 0 0 8px;
+      }
+      .dataTables_wrapper {
+        padding: 0;
+      }
+      .dataTables_length select,
+      .dataTables_filter input {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 5px 10px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-250px);
+        }
+        .main-content {
+          margin-left: 0;
+        }
+        .navbar {
+          left: 0;
+        }
+        .sidebar.show {
+          transform: translateX(0);
+        }
+      }
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+      .action-buttons .btn {
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+      .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        height: 100%;
+        text-align: center;
+      }
+      .stats-card i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+      .stats-card h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+      }
+      .stats-card p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+    </style>
   </head>
+
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="/dashboard"
-          ><i class="fas fa-flask"></i> MediLab</a
-        >
-        <div class="navbar-nav">
-          <a class="nav-link" href="/dashboard">Dashboard</a>
-          <a class="nav-link active" href="/pasien">Pasien</a>
-          <a class="nav-link" href="/input-pemeriksaan">Pemeriksaan</a>
-          <a class="nav-link" href="/logout">Logout</a>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="p-3">
+        <h5 class="text-center mb-4" style="color: #667eea; font-weight: 700">
+          MENU MEDILAB
+        </h5>
+        <div class="nav flex-column">
+          <a class="sidebar-link" href="/dashboard">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+          </a>
+          <a class="sidebar-link active" href="/pasien">
+            <i class="fas fa-users"></i>Data Pasien
+          </a>
+          <a class="sidebar-link" href="/inputpemeriksaan">
+            <i class="fas fa-plus-circle"></i>Input Pemeriksaan
+          </a>
+          <a class="sidebar-link" href="/validashasil">
+            <i class="fas fa-check-circle"></i>Validasi Hasil
+          </a>
+          <a class="sidebar-link" href="/pembayaran">
+            <i class="fas fa-money-bill-wave"></i>Pembayaran
+          </a>
+          <a class="sidebar-link" href="/total-biaya">
+            <i class="fas fa-chart-bar"></i>Laporan Biaya
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light me-3" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/dashboard">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            alt="Logo MediLab"
+            class="logo-img"
+          />
+          <span>Data Pasien</span>
+        </a>
+        <div class="d-flex align-items-center">
+          <span class="navbar-text me-3">
+            <i class="fas fa-user-circle me-1"></i>
+            Selamat Datang,
+            <strong><?php echo $_SESSION['nama_lengkap'] ?? 'Admin'; ?></strong>
+          </span>
+          <a href="/logout" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
         </div>
       </div>
     </nav>
 
-    <div class="container mt-4">
-      <h3>Data Pasien</h3>
-      <button
-        class="btn btn-primary mb-3"
-        data-bs-toggle="modal"
-        data-bs-target="#addModal"
-      >
-        <i class="fas fa-plus"></i> Tambah Pasien
-      </button>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="header-card">
+          <h1 class="mb-3">
+            <i class="fas fa-users me-2" style="color: #667eea"></i>Manajemen
+            Data Pasien
+          </h1>
+          <p class="text-muted mb-0">
+            Kelola informasi pasien, lihat riwayat pemeriksaan, dan pantau
+            status pasien dengan mudah.
+          </p>
+        </div>
 
-      <table id="patientsTable" class="table table-striped">
-        <thead>
-          <tr>
-            <th>ID Pasien</th>
-            <th>Nama Lengkap</th>
-            <th>Gender</th>
-            <th>Tanggal Lahir</th>
-            <th>Telepon</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Data akan diisi oleh JavaScript -->
-        </tbody>
-      </table>
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-users"></i>
+              <h4 id="totalPatients">0</h4>
+              <p>Total Pasien</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-user-plus"></i>
+              <h4 id="newPatients">0</h4>
+              <p>Pasien Baru (Bulan Ini)</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-flask"></i>
+              <h4 id="activeExaminations">0</h4>
+              <p>Pemeriksaan Aktif</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-check-circle"></i>
+              <h4 id="completedExaminations">0</h4>
+              <p>Pemeriksaan Selesai</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="section-title mb-0">
+                <i class="fas fa-list me-2"></i>Daftar Pasien
+              </h4>
+              <button
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#addModal"
+              >
+                <i class="fas fa-plus me-2"></i>Tambah Pasien Baru
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table id="patientsTable" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th><i class="fas fa-hashtag me-1"></i>No</th>
+                    <th><i class="fas fa-id-card me-1"></i>Kode Pasien</th>
+                    <th><i class="fas fa-user me-1"></i>Nama Lengkap</th>
+                    <th><i class="fas fa-venus-mars me-1"></i>Jenis Kelamin</th>
+                    <th>
+                      <i class="fas fa-birthday-cake me-1"></i>Tanggal Lahir
+                    </th>
+                    <th><i class="fas fa-phone me-1"></i>Telepon</th>
+                    <th><i class="fas fa-map-marker-alt me-1"></i>Alamat</th>
+                    <th><i class="fas fa-cogs me-1"></i>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <p class="text-muted mb-0">
+            <i class="fas fa-copyright me-1"></i>
+            <?php echo date('Y'); ?>
+            MediLab System. Manajemen Data Pasien
+          </p>
+          <small class="text-muted"
+            >Total Data: <span id="totalDataCount">0</span> pasien | Terakhir
+            diperbarui:
+            <?php echo date('d-m-Y H:i:s'); ?></small
+          >
+        </footer>
+      </div>
     </div>
 
     <!-- Modal Tambah Pasien -->
-    <div class="modal fade" id="addModal">
-      <div class="modal-dialog">
+    <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Tambah Pasien Baru</h5>
+            <h5 class="modal-title">
+              <i class="fas fa-user-plus me-2"></i>Tambah Pasien Baru
+            </h5>
             <button
               type="button"
-              class="btn-close"
+              class="btn-close btn-close-white"
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body p-4">
             <form id="addPatientForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Kode Pasien</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-id-card"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="kodePasien"
+                      name="kodePasien"
+                      placeholder="P001, P002, ..."
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nama Lengkap</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-user"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="namaLengkap"
+                      name="namaLengkap"
+                      placeholder="Masukkan nama lengkap"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Jenis Kelamin</label>
+                  <select
+                    class="form-select"
+                    id="jenisKelamin"
+                    name="jenisKelamin"
+                    required
+                  >
+                    <option value="">Pilih jenis kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tanggal Lahir</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="tanggalLahir"
+                    name="tanggalLahir"
+                    required
+                  />
+                </div>
+              </div>
+
               <div class="mb-3">
-                <label>ID Pasien</label>
-                <input
-                  type="text"
+                <label class="form-label">Alamat Lengkap</label>
+                <textarea
                   class="form-control"
-                  name="patient_id"
+                  id="alamat"
+                  name="alamat"
+                  rows="3"
+                  placeholder="Masukkan alamat lengkap"
                   required
-                />
+                ></textarea>
               </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nomor Telepon</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-phone"></i
+                    ></span>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="telepon"
+                      name="telepon"
+                      placeholder="08123456789"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email (Opsional)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-envelope"></i
+                    ></span>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      placeholder="email@contoh.com"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div class="mb-3">
-                <label>Nama Lengkap</label>
-                <input
-                  type="text"
+                <label class="form-label">Catatan Khusus (Opsional)</label>
+                <textarea
                   class="form-control"
-                  name="full_name"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label>Jenis Kelamin</label>
-                <select class="form-select" name="gender" required>
-                  <option value="Laki-laki">Laki-laki</option>
-                  <option value="Perempuan">Perempuan</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label>Tanggal Lahir</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  name="birth_date"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label>Telepon</label>
-                <input type="text" class="form-control" name="phone" />
-              </div>
-              <div class="mb-3">
-                <label>Alamat</label>
-                <textarea class="form-control" name="address"></textarea>
+                  id="catatan"
+                  name="catatan"
+                  rows="2"
+                  placeholder="Catatan tambahan tentang pasien"
+                ></textarea>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-outline-primary"
               data-bs-dismiss="modal"
             >
-              Batal
+              <i class="fas fa-times me-2"></i>Batal
             </button>
             <button
               type="button"
               class="btn btn-primary"
               onclick="savePatient()"
             >
-              Simpan
+              <i class="fas fa-save me-2"></i>Simpan Data
             </button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Modal Edit Pasien -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-edit me-2"></i>Edit Data Pasien
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="editPatientForm">
+              <input type="hidden" id="editId" />
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Kode Pasien</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-id-card"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="editKodePasien"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nama Lengkap</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-user"></i
+                    ></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="editNamaLengkap"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Jenis Kelamin</label>
+                  <select class="form-select" id="editJenisKelamin" required>
+                    <option value="">Pilih jenis kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tanggal Lahir</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="editTanggalLahir"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Alamat Lengkap</label>
+                <textarea
+                  class="form-control"
+                  id="editAlamat"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nomor Telepon</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-phone"></i
+                    ></span>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="editTelepon"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email (Opsional)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="fas fa-envelope"></i
+                    ></span>
+                    <input type="email" class="form-control" id="editEmail" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Catatan Khusus (Opsional)</label>
+                <textarea
+                  class="form-control"
+                  id="editCatatan"
+                  rows="2"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-bs-dismiss="modal"
+            >
+              <i class="fas fa-times me-2"></i>Batal
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="updatePatient()"
+            >
+              <i class="fas fa-save me-2"></i>Update Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-      // Load data pasien
-      function loadPatients() {
+      let patients = [];
+      let dataTable = null;
+      let currentEditId = null;
+
+      // Toggle Sidebar
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const mainContent = document.getElementById("mainContent");
+          const navbar = document.querySelector(".navbar");
+
+          sidebar.classList.toggle("collapsed");
+          mainContent.classList.toggle("expanded");
+          navbar.classList.toggle("expanded");
+
+          localStorage.setItem(
+            "sidebarCollapsed",
+            sidebar.classList.contains("collapsed")
+          );
+        });
+
+      // Load sidebar state
+      document.addEventListener("DOMContentLoaded", function () {
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const navbar = document.querySelector(".navbar");
+
+        if (isCollapsed) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        // Initialize DataTable
+        initDataTable();
+
+        // Load data dari API, bukan localStorage
+        loadPatientsFromAPI();
+
+        // Set today's date for forms
+        setDefaultDates();
+
+        // Auto-generate patient code
+        generatePatientCode();
+      });
+
+      // Initialize DataTable
+      function initDataTable() {
+        dataTable = $("#patientsTable").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
+          },
+          pageLength: 10,
+          lengthMenu: [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "Semua"],
+          ],
+          order: [[1, "asc"]],
+          columnDefs: [
+            { orderable: false, targets: [0, 7] },
+            { className: "text-center", targets: [0, 2, 3] },
+          ],
+        });
+      }
+
+      // Load patients data dari API
+      function loadPatientsFromAPI() {
+        // Tampilkan loading state
+        showLoading(true);
+
         $.ajax({
           url: "/api/pasien",
           method: "GET",
-          success: function (data) {
-            let table = $("#patientsTable").DataTable();
-            table.clear();
-            data.forEach(function (patient) {
-              table.row.add([
-                patient.patient_id,
-                patient.full_name,
-                patient.gender,
-                patient.birth_date,
-                patient.phone,
-                `<button class="btn btn-sm btn-warning" onclick="editPatient(${patient.id})">Edit</button>
-                             <button class="btn btn-sm btn-danger" onclick="deletePatient(${patient.id})">Hapus</button>`,
-              ]);
-            });
-            table.draw();
+          success: function (response) {
+            patients = response || [];
+            updateTable();
+            updateStats();
+            showLoading(false);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error loading patients:", error);
+            // Fallback ke dummy data jika API error
+            loadDummyData();
+            showLoading(false);
+            showNotification(
+              "error",
+              "Gagal memuat data dari server. Menampilkan data contoh."
+            );
           },
         });
       }
 
-      // Tambah pasien
+      // Fallback ke dummy data jika API tidak bekerja
+      function loadDummyData() {
+        patients = [
+          {
+            id: 1,
+            kode_pasien: "P001",
+            nama_lengkap: "Ahmad Santoso",
+            jenis_kelamin: "Laki-laki",
+            tanggal_lahir: "1985-05-15",
+            alamat: "Jl. Merdeka No. 123, Jakarta",
+            telepon: "081234567890",
+            email: "ahmad@email.com",
+            dibuat_pada: "2024-01-15",
+          },
+          {
+            id: 2,
+            kode_pasien: "P002",
+            nama_lengkap: "Siti Aminah",
+            jenis_kelamin: "Perempuan",
+            tanggal_lahir: "1990-11-22",
+            alamat: "Jl. Sudirman No. 45, Bandung",
+            telepon: "081298765432",
+            email: "siti@email.com",
+            dibuat_pada: "2024-02-20",
+          },
+        ];
+      }
+
+      // Update tabel dengan data
+      function updateTable() {
+        if (dataTable) {
+          dataTable.clear();
+
+          patients.forEach((patient, index) => {
+            const birthDate = new Date(patient.tanggal_lahir);
+            const age = calculateAge(birthDate);
+            const createdDate = new Date(patient.dibuat_pada);
+
+            dataTable.row.add([
+              index + 1,
+              `<span class="badge bg-primary">${patient.kode_pasien}</span>`,
+              `<strong>${patient.nama_lengkap}</strong><br><small>${age} tahun</small>`,
+              patient.jenis_kelamin === "Laki-laki"
+                ? '<i class="fas fa-mars text-primary"></i> Laki-laki'
+                : '<i class="fas fa-venus text-danger"></i> Perempuan',
+              formatDate(patient.tanggal_lahir),
+              patient.telepon || "-",
+              `<small>${(patient.alamat || "").substring(0, 50)}${
+                (patient.alamat || "").length > 50 ? "..." : ""
+              }</small>`,
+              `
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-outline-info" onclick="viewPatient(${patient.id})" title="Lihat Detail">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${patient.id})" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deletePatient(${patient.id})" title="Hapus">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `,
+            ]);
+          });
+
+          dataTable.draw();
+
+          // Update footer count
+          document.getElementById("totalDataCount").textContent =
+            patients.length;
+        }
+      }
+
+      // Update statistics
+      function updateStats() {
+        const totalPatients = patients.length;
+        const thisMonth = new Date().getMonth();
+        const thisYear = new Date().getFullYear();
+
+        const newPatients = patients.filter((p) => {
+          const patientDate = new Date(p.dibuat_pada || new Date());
+          return (
+            patientDate.getMonth() === thisMonth &&
+            patientDate.getFullYear() === thisYear
+          );
+        }).length;
+
+        document.getElementById("totalPatients").textContent = totalPatients;
+        document.getElementById("newPatients").textContent = newPatients;
+
+        // Simulasi data pemeriksaan
+        document.getElementById("activeExaminations").textContent = Math.floor(
+          totalPatients * 0.6
+        );
+        document.getElementById("completedExaminations").textContent =
+          Math.floor(totalPatients * 0.4);
+      }
+
+      // Save new patient via API
       function savePatient() {
-        let formData = {
-          patient_id: $('[name="patient_id"]').val(),
-          full_name: $('[name="full_name"]').val(),
-          gender: $('[name="gender"]').val(),
-          birth_date: $('[name="birth_date"]').val(),
-          phone: $('[name="phone"]').val(),
-          address: $('[name="address"]').val(),
-          email: "",
+        const patient = {
+          kode_pasien: document.getElementById("kodePasien").value,
+          nama_lengkap: document.getElementById("namaLengkap").value,
+          jenis_kelamin: document.getElementById("jenisKelamin").value,
+          tanggal_lahir: document.getElementById("tanggalLahir").value,
+          alamat: document.getElementById("alamat").value,
+          telepon: document.getElementById("telepon").value,
+          email: document.getElementById("email").value || "",
         };
+
+        // Validasi kode pasien unik
+        if (patients.some((p) => p.kode_pasien === patient.kode_pasien)) {
+          showNotification(
+            "error",
+            "Kode pasien sudah digunakan. Gunakan kode lain."
+          );
+          return;
+        }
 
         $.ajax({
           url: "/api/pasien",
           method: "POST",
           contentType: "application/json",
-          data: JSON.stringify(formData),
+          data: JSON.stringify(patient),
           success: function (response) {
-            alert(response.message);
-            $("#addModal").modal("hide");
-            loadPatients();
+            if (response.sukses) {
+              showNotification("success", "Data pasien berhasil disimpan!");
+              $("#addModal").modal("hide");
+              document.getElementById("addPatientForm").reset();
+              generatePatientCode();
+              // Reload data dari API
+              loadPatientsFromAPI();
+            } else {
+              showNotification(
+                "error",
+                response.pesan || "Gagal menyimpan data."
+              );
+            }
+          },
+          error: function (xhr, status, error) {
+            showNotification("error", "Gagal menyimpan data: " + error);
           },
         });
       }
 
-      // Hapus pasien
+      // Open edit modal
+      function openEditModal(id) {
+        const patient = patients.find((p) => p.id === id);
+        if (!patient) return;
+
+        currentEditId = id;
+        document.getElementById("editId").value = id;
+        document.getElementById("editKodePasien").value = patient.kode_pasien;
+        document.getElementById("editNamaLengkap").value = patient.nama_lengkap;
+        document.getElementById("editJenisKelamin").value =
+          patient.jenis_kelamin;
+        document.getElementById("editTanggalLahir").value =
+          patient.tanggal_lahir;
+        document.getElementById("editAlamat").value = patient.alamat;
+        document.getElementById("editTelepon").value = patient.telepon || "";
+        document.getElementById("editEmail").value = patient.email || "";
+        document.getElementById("editCatatan").value = patient.catatan || "";
+
+        $("#editModal").modal("show");
+      }
+
+      // Update patient via API
+      function updatePatient() {
+        const patientData = {
+          kode_pasien: document.getElementById("editKodePasien").value,
+          nama_lengkap: document.getElementById("editNamaLengkap").value,
+          jenis_kelamin: document.getElementById("editJenisKelamin").value,
+          tanggal_lahir: document.getElementById("editTanggalLahir").value,
+          alamat: document.getElementById("editAlamat").value,
+          telepon: document.getElementById("editTelepon").value,
+          email: document.getElementById("editEmail").value || "",
+        };
+
+        $.ajax({
+          url: "/api/pasien/" + currentEditId,
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(patientData),
+          success: function (response) {
+            if (response.sukses) {
+              showNotification("success", "Data pasien berhasil diperbarui!");
+              $("#editModal").modal("hide");
+              // Reload data dari API
+              loadPatientsFromAPI();
+            } else {
+              showNotification(
+                "error",
+                response.pesan || "Gagal memperbarui data."
+              );
+            }
+          },
+          error: function (xhr, status, error) {
+            showNotification("error", "Gagal memperbarui data: " + error);
+          },
+        });
+      }
+
+      // View patient details
+      function viewPatient(id) {
+        $.ajax({
+          url: "/api/pasien/" + id,
+          method: "GET",
+          success: function (patient) {
+            const birthDate = new Date(patient.tanggal_lahir);
+            const age = calculateAge(birthDate);
+            const createdDate = new Date(patient.dibuat_pada);
+
+            const detail = `
+          <div class="alert alert-info">
+            <strong>Detail Pasien</strong><br><br>
+            <strong>Kode:</strong> ${patient.kode_pasien}<br>
+            <strong>Nama:</strong> ${patient.nama_lengkap}<br>
+            <strong>Jenis Kelamin:</strong> ${patient.jenis_kelamin}<br>
+            <strong>Tanggal Lahir:</strong> ${formatDate(
+              patient.tanggal_lahir
+            )} (${age} tahun)<br>
+            <strong>Telepon:</strong> ${patient.telepon || "-"}<br>
+            <strong>Email:</strong> ${patient.email || "-"}<br>
+            <strong>Alamat:</strong> ${patient.alamat || "-"}<br>
+            <strong>Terdaftar:</strong> ${formatDateTime(createdDate)}
+          </div>
+        `;
+
+            alert(detail);
+          },
+          error: function () {
+            showNotification("error", "Gagal memuat detail pasien.");
+          },
+        });
+      }
+
+      // Delete patient via API
       function deletePatient(id) {
-        if (confirm("Apakah Anda yakin ingin menghapus pasien ini?")) {
-          $.ajax({
-            url: `/api/pasien/delete/${id}`,
-            method: "POST",
-            success: function (response) {
-              alert(response.message);
-              loadPatients();
-            },
-          });
+        if (!confirm("Apakah Anda yakin ingin menghapus data pasien ini?"))
+          return;
+
+        $.ajax({
+          url: "/api/pasien/hapus/" + id,
+          method: "POST",
+          success: function (response) {
+            if (response.sukses) {
+              showNotification("success", "Data pasien berhasil dihapus!");
+              // Reload data dari API
+              loadPatientsFromAPI();
+            } else {
+              showNotification(
+                "error",
+                response.pesan || "Gagal menghapus data."
+              );
+            }
+          },
+          error: function (xhr, status, error) {
+            showNotification("error", "Gagal menghapus data: " + error);
+          },
+        });
+      }
+
+      // Helper functions
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      }
+
+      function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function calculateAge(birthDate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+
+        return age;
+      }
+
+      function generatePatientCode() {
+        // Generate code based on existing data
+        const lastCode =
+          patients.length > 0
+            ? patients.reduce((max, patient) => {
+                const codeNum = parseInt(
+                  patient.kode_pasien?.replace("P", "") || "0"
+                );
+                return codeNum > max ? codeNum : max;
+              }, 0)
+            : 0;
+
+        const newCode = "P" + (lastCode + 1).toString().padStart(3, "0");
+        document.getElementById("kodePasien").value = newCode;
+      }
+
+      function setDefaultDates() {
+        const today = new Date();
+        const year = today.getFullYear() - 30; // Default 30 tahun lalu
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        document.getElementById(
+          "tanggalLahir"
+        ).value = `${year}-${month}-${day}`;
+      }
+
+      function showNotification(type, message) {
+        const alertClass =
+          type === "success" ? "alert-success" : "alert-danger";
+
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText =
+          "top: 20px; right: 20px; z-index: 1050; min-width: 300px;";
+        alertDiv.innerHTML = `
+      <strong>${type === "success" ? "Sukses!" : "Error!"}</strong>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 5000);
+      }
+
+      function showLoading(show) {
+        const tbody = document.querySelector("#patientsTable tbody");
+        if (show) {
+          tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Memuat data...</p>
+          </td>
+        </tr>
+      `;
         }
       }
 
-      // Edit pasien (implementasi sederhana)
-      function editPatient(id) {
-        alert("Fitur edit untuk pasien ID: " + id);
+      // Export to Excel (simulasi)
+      function exportToExcel() {
+        showNotification("info", "Fitur export akan diimplementasikan.");
       }
 
-      // Load data saat halaman dimuat
-      $(document).ready(function () {
-        $("#patientsTable").DataTable();
-        loadPatients();
-      });
+      // Print report
+      function printReport() {
+        window.print();
+      }
+
+      // Search functionality
+      function searchPatients() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        if (dataTable) {
+          dataTable.search(searchTerm).draw();
+        }
+      }
     </script>
   </body>
 </html>

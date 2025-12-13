@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input Pemeriksaan Pasien - MediLab</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 100%
+        ) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 250px;
+        z-index: 1030;
+        transition: left 0.3s ease;
+      }
+      .navbar.expanded {
+        left: 0;
+      }
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        z-index: 1040;
+        transition: transform 0.3s ease;
+        padding-top: 70px;
+      }
+      .sidebar.collapsed {
+        transform: translateX(-250px);
+      }
+      .main-content {
+        margin-left: 250px;
+        margin-top: 70px;
+        transition: margin-left 0.3s ease;
+        padding: 30px;
+        min-height: calc(100vh - 70px);
+      }
+      .main-content.expanded {
+        margin-left: 0;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 25px;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+      .form-control,
+      .form-select {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      .btn-outline-primary {
+        border: 2px solid #667eea;
+        color: #667eea;
+        border-radius: 10px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-outline-primary:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.05);
+      }
+      .table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+      .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .table th {
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+      }
+      .table td {
+        vertical-align: middle;
+        padding: 15px;
+      }
+      .section-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        position: relative;
+        color: #333;
+        display: flex;
+        align-items: center;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: #667eea;
+        border-radius: 2px;
+      }
+      .logo-img {
+        width: 40px;
+        margin-right: 10px;
+      }
+      .sidebar-link {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+        text-decoration: none;
+        display: block;
+      }
+      .sidebar-link:hover,
+      .sidebar-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .sidebar-link i {
+        width: 25px;
+        text-align: center;
+        margin-right: 10px;
+      }
+      .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #444;
+      }
+      .input-group-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px 0 0 10px;
+      }
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .header-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-left: 5px solid #667eea;
+        padding: 25px;
+        margin-bottom: 30px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-250px);
+        }
+        .main-content {
+          margin-left: 0;
+        }
+        .navbar {
+          left: 0;
+        }
+        .sidebar.show {
+          transform: translateX(0);
+        }
+      }
+      .form-section {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+      }
+      .form-section h5 {
+        color: #667eea;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+      .form-section h5 i {
+        margin-right: 10px;
+      }
+      .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="p-3">
+        <h5 class="text-center mb-4" style="color: #667eea; font-weight: 700">
+          MENU MEDILAB
+        </h5>
+        <div class="nav flex-column">
+          <a class="sidebar-link" href="/dashboard">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+          </a>
+          <a class="sidebar-link" href="/pasien">
+            <i class="fas fa-users"></i>Data Pasien
+          </a>
+          <a class="sidebar-link active" href="/inputpemeriksaan">
+            <i class="fas fa-plus-circle"></i>Input Pemeriksaan
+          </a>
+          <a class="sidebar-link" href="/validashasil">
+            <i class="fas fa-check-circle"></i>Validasi Hasil
+          </a>
+          <a class="sidebar-link" href="/pembayaran">
+            <i class="fas fa-money-bill-wave"></i>Pembayaran
+          </a>
+          <a class="sidebar-link" href="/total-biaya">
+            <i class="fas fa-chart-bar"></i>Laporan Biaya
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light me-3" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/dashboard">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            alt="Logo MediLab"
+            class="logo-img"
+          />
+          <span>Input Pemeriksaan</span>
+        </a>
+        <div class="d-flex align-items-center">
+          <span class="navbar-text me-3">
+            <i class="fas fa-user-circle me-1"></i>
+            Selamat Datang,
+            <strong><?php echo $_SESSION['nama_lengkap'] ?? 'Admin'; ?></strong>
+          </span>
+          <a href="/logout" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="header-card">
+          <h1 class="mb-3">
+            <i class="fas fa-plus-circle me-2" style="color: #667eea"></i>Input
+            Pemeriksaan Pasien Laboratorium
+          </h1>
+          <p class="text-muted mb-0">
+            Sistem lengkap untuk mendaftarkan dan mengelola pemeriksaan pasien
+            di MediLab dengan mudah dan akurat.
+          </p>
+        </div>
+
+        <!-- Form Input Pemeriksaan -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-4">
+                <h4 class="section-title mb-4">
+                  <i class="fas fa-clipboard-list me-2"></i>Form Input
+                  Pemeriksaan Pasien
+                </h4>
+
+                <form id="patientForm">
+                  <div class="row">
+                    <!-- Data Pasien -->
+                    <div class="col-lg-6 mb-4">
+                      <div class="form-section">
+                        <h5><i class="fas fa-user me-2"></i>Data Pasien</h5>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Kode Pasien *</label>
+                            <div class="input-group">
+                              <span class="input-group-text"
+                                ><i class="fas fa-id-card"></i
+                              ></span>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="kodePasien"
+                                placeholder="P001, P002, ..."
+                                required
+                              />
+                            </div>
+                            <small class="text-muted">* Kode pasien unik</small>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Lengkap *</label>
+                            <div class="input-group">
+                              <span class="input-group-text"
+                                ><i class="fas fa-user"></i
+                              ></span>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="namaLengkap"
+                                placeholder="Masukkan nama lengkap"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Kelamin *</label>
+                            <select
+                              class="form-select"
+                              id="jenisKelamin"
+                              required
+                            >
+                              <option value="">Pilih jenis kelamin</option>
+                              <option value="Laki-laki">Laki-laki</option>
+                              <option value="Perempuan">Perempuan</option>
+                            </select>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Lahir *</label>
+                            <input
+                              type="date"
+                              class="form-control"
+                              id="tanggalLahir"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label">Alamat *</label>
+                          <textarea
+                            class="form-control"
+                            id="alamat"
+                            rows="3"
+                            placeholder="Masukkan alamat lengkap"
+                            required
+                          ></textarea>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Nomor Telepon *</label>
+                            <div class="input-group">
+                              <span class="input-group-text"
+                                ><i class="fas fa-phone"></i
+                              ></span>
+                              <input
+                                type="tel"
+                                class="form-control"
+                                id="telepon"
+                                placeholder="08123456789"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Email (Opsional)</label>
+                            <div class="input-group">
+                              <span class="input-group-text"
+                                ><i class="fas fa-envelope"></i
+                              ></span>
+                              <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                placeholder="email@contoh.com"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Data Pemeriksaan -->
+                    <div class="col-lg-6 mb-4">
+                      <div class="form-section">
+                        <h5>
+                          <i class="fas fa-flask me-2"></i>Data Pemeriksaan
+                        </h5>
+
+                        <div class="mb-3">
+                          <label class="form-label">Jenis Pemeriksaan *</label>
+                          <select
+                            class="form-select"
+                            id="jenisPemeriksaan"
+                            required
+                          >
+                            <option value="">Pilih jenis pemeriksaan</option>
+                            <option value="Darah Lengkap">
+                              Darah Lengkap (Hematologi)
+                            </option>
+                            <option value="Glukosa Puasa">Glukosa Puasa</option>
+                            <option value="Kolesterol">Kolesterol Total</option>
+                            <option value="Hematologi">
+                              Hematologi Lengkap
+                            </option>
+                            <option value="Kimia Klinik">Kimia Klinik</option>
+                            <option value="Mikrobiologi">Mikrobiologi</option>
+                            <option value="Imunologi">Imunologi</option>
+                            <option value="Endokrinologi">Endokrinologi</option>
+                            <option value="Lainnya">Lainnya</option>
+                          </select>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Kode Pemeriksaan *</label>
+                            <div class="input-group">
+                              <span class="input-group-text"
+                                ><i class="fas fa-barcode"></i
+                              ></span>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="kodePemeriksaan"
+                                placeholder="EX001, EX002, ..."
+                                required
+                              />
+                            </div>
+                            <small class="text-muted"
+                              >* Kode unik pemeriksaan</small
+                            >
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label"
+                              >Tanggal Pemeriksaan *</label
+                            >
+                            <input
+                              type="date"
+                              class="form-control"
+                              id="tanggalPemeriksaan"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label">Dokter Pengirim *</label>
+                          <div class="input-group">
+                            <span class="input-group-text"
+                              ><i class="fas fa-user-md"></i
+                            ></span>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="dokterPengirim"
+                              placeholder="Nama dokter pengirim"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label">Catatan Khusus</label>
+                          <textarea
+                            class="form-control"
+                            id="catatan"
+                            rows="3"
+                            placeholder="Catatan tambahan (opsional)"
+                          ></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label"
+                            >Upload Berkas (Opsional)</label
+                          >
+                          <input
+                            type="file"
+                            class="form-control"
+                            id="berkas"
+                            accept=".pdf,.jpg,.png,.doc,.docx"
+                          />
+                          <small class="text-muted"
+                            >Format: PDF, JPG, PNG, DOC (Maks. 5MB)</small
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Loading Spinner -->
+                  <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Menyimpan data ke database...</p>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="text-center mt-4" id="actionButtons">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                      <i class="fas fa-save me-2"></i>Simpan Data Pemeriksaan
+                    </button>
+                    <button
+                      type="reset"
+                      class="btn btn-outline-primary btn-lg px-5 ms-3"
+                    >
+                      <i class="fas fa-undo me-2"></i>Reset Form
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daftar Pemeriksaan Terbaru -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-4">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-4"
+                >
+                  <h4 class="section-title mb-0">
+                    <i class="fas fa-list me-2"></i>Daftar Pemeriksaan Terbaru
+                  </h4>
+                  <div>
+                    <button
+                      class="btn btn-outline-primary me-2"
+                      onclick="loadExaminations()"
+                    >
+                      <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                    <button
+                      class="btn btn-outline-success"
+                      onclick="exportToExcel()"
+                    >
+                      <i class="fas fa-file-excel me-1"></i>Export
+                    </button>
+                  </div>
+                </div>
+
+                <div class="loading-spinner" id="tableLoading">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-2">Memuat data pemeriksaan...</p>
+                </div>
+
+                <div
+                  class="table-responsive"
+                  id="tableContainer"
+                  style="display: none"
+                >
+                  <table class="table table-hover" id="examinationTable">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Kode</th>
+                        <th>Nama Pasien</th>
+                        <th>Jenis Pemeriksaan</th>
+                        <th>Tanggal</th>
+                        <th>Dokter</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Data akan ditambahkan secara dinamis -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <p class="text-muted mb-0">
+            <i class="fas fa-copyright me-1"></i>
+            <?php echo date('Y'); ?>
+            MediLab System. Form Input Pemeriksaan Pasien
+          </p>
+          <small class="text-muted"
+            >Terakhir diperbarui:
+            <?php echo date('d-m-Y H:i:s'); ?></small
+          >
+        </footer>
+      </div>
+    </div>
+
+    <!-- Modal Detail Pemeriksaan -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-file-medical-alt me-2"></i>Detail Pemeriksaan
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" id="modalDetailContent">
+            <!-- Content akan diisi oleh JavaScript -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+      // Variabel global
+      let examinations = [];
+
+      // Toggle Sidebar
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const mainContent = document.getElementById("mainContent");
+          const navbar = document.querySelector(".navbar");
+
+          sidebar.classList.toggle("collapsed");
+          mainContent.classList.toggle("expanded");
+          navbar.classList.toggle("expanded");
+
+          localStorage.setItem(
+            "sidebarCollapsed",
+            sidebar.classList.contains("collapsed")
+          );
+        });
+
+      // Load sidebar state dan inisialisasi
+      document.addEventListener("DOMContentLoaded", function () {
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const navbar = document.querySelector(".navbar");
+
+        if (isCollapsed) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        // Set tanggal default
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("tanggalPemeriksaan").value = today;
+        document.getElementById("tanggalLahir").value =
+          new Date().getFullYear() - 30 + "-01-01";
+
+        // Generate kode pemeriksaan otomatis
+        generateExaminationCode();
+
+        // Load existing examinations dari API
+        loadExaminations();
+      });
+
+      // Generate kode pemeriksaan otomatis
+      function generateExaminationCode() {
+        // Ambil data terakhir dari localStorage untuk generate kode
+        const localExams =
+          JSON.parse(localStorage.getItem("examinations")) || [];
+        const lastCode =
+          localExams.length > 0
+            ? localExams[localExams.length - 1].kode_pemeriksaan
+            : "EX000";
+
+        const num = parseInt(lastCode.replace("EX", "")) + 1;
+        const newCode = "EX" + num.toString().padStart(3, "0");
+        document.getElementById("kodePemeriksaan").value = newCode;
+      }
+
+      // Generate kode pasien otomatis
+      function generatePatientCode() {
+        const localExams =
+          JSON.parse(localStorage.getItem("examinations")) || [];
+        const lastPatientCode =
+          localExams.length > 0
+            ? localExams.reduce((max, exam) => {
+                const codeNum = parseInt(
+                  exam.kode_pasien?.replace("P", "") || "0"
+                );
+                return codeNum > max ? codeNum : max;
+              }, 0)
+            : 0;
+
+        const newPatientCode =
+          "P" + (lastPatientCode + 1).toString().padStart(3, "0");
+        document.getElementById("kodePasien").value = newPatientCode;
+      }
+
+      // Form submission - Kirim ke API
+      document
+        .getElementById("patientForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Validasi form
+          if (!validateForm()) {
+            return;
+          }
+
+          // Tampilkan loading spinner
+          document.getElementById("loadingSpinner").style.display = "block";
+          document.getElementById("actionButtons").style.display = "none";
+
+          // Data yang akan dikirim ke API
+          const examinationData = {
+            kode_pasien: document.getElementById("kodePasien").value,
+            nama_lengkap: document.getElementById("namaLengkap").value,
+            jenis_kelamin: document.getElementById("jenisKelamin").value,
+            tanggal_lahir: document.getElementById("tanggalLahir").value,
+            alamat: document.getElementById("alamat").value,
+            telepon: document.getElementById("telepon").value,
+            email: document.getElementById("email").value || "",
+            kode_pemeriksaan: document.getElementById("kodePemeriksaan").value,
+            jenis_pemeriksaan:
+              document.getElementById("jenisPemeriksaan").value,
+            nama_dokter: document.getElementById("dokterPengirim").value,
+            tanggal_pemeriksaan:
+              document.getElementById("tanggalPemeriksaan").value,
+            catatan: document.getElementById("catatan").value || "",
+            status: "menunggu",
+          };
+
+          // Kirim data ke API
+          $.ajax({
+            url: "/api/pemeriksaan",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(examinationData),
+            success: function (response) {
+              // Sembunyikan loading spinner
+              document.getElementById("loadingSpinner").style.display = "none";
+              document.getElementById("actionButtons").style.display = "block";
+
+              if (response.sukses) {
+                showNotification(
+                  "success",
+                  "✅ Data pemeriksaan berhasil disimpan ke database!"
+                );
+
+                // Reset form
+                document.getElementById("patientForm").reset();
+
+                // Set tanggal default
+                const today = new Date().toISOString().split("T")[0];
+                document.getElementById("tanggalPemeriksaan").value = today;
+                document.getElementById("tanggalLahir").value =
+                  new Date().getFullYear() - 30 + "-01-01";
+
+                // Generate kode baru
+                generateExaminationCode();
+                generatePatientCode();
+
+                // Load ulang data pemeriksaan
+                loadExaminations();
+              } else {
+                showNotification(
+                  "error",
+                  "❌ Gagal menyimpan data: " +
+                    (response.pesan || "Error tidak diketahui")
+                );
+              }
+            },
+            error: function (xhr, status, error) {
+              // Sembunyikan loading spinner
+              document.getElementById("loadingSpinner").style.display = "none";
+              document.getElementById("actionButtons").style.display = "block";
+
+              console.error("Error:", error);
+              showNotification(
+                "error",
+                "❌ Gagal menyimpan data ke server. Pastikan koneksi internet stabil."
+              );
+            },
+          });
+        });
+
+      // Validasi form
+      function validateForm() {
+        const requiredFields = [
+          "kodePasien",
+          "namaLengkap",
+          "jenisKelamin",
+          "tanggalLahir",
+          "alamat",
+          "telepon",
+          "jenisPemeriksaan",
+          "kodePemeriksaan",
+          "tanggalPemeriksaan",
+          "dokterPengirim",
+        ];
+
+        for (const fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (!field.value.trim()) {
+            showNotification(
+              "error",
+              `❌ Field "${
+                field.previousElementSibling?.innerText || fieldId
+              }" harus diisi!`
+            );
+            field.focus();
+            return false;
+          }
+        }
+
+        // Validasi format telepon
+        const phone = document.getElementById("telepon").value;
+        if (!/^[0-9]{10,13}$/.test(phone.replace(/\D/g, ""))) {
+          showNotification(
+            "error",
+            "❌ Nomor telepon harus terdiri dari 10-13 digit angka!"
+          );
+          document.getElementById("telepon").focus();
+          return false;
+        }
+
+        return true;
+      }
+
+      // Load examinations dari API
+      function loadExaminations() {
+        // Tampilkan loading spinner tabel
+        document.getElementById("tableLoading").style.display = "block";
+        document.getElementById("tableContainer").style.display = "none";
+
+        $.ajax({
+          url: "/api/pemeriksaan",
+          method: "GET",
+          success: function (data) {
+            examinations = data || [];
+            displayExaminations();
+            // Sembunyikan loading spinner
+            document.getElementById("tableLoading").style.display = "none";
+            document.getElementById("tableContainer").style.display = "block";
+          },
+          error: function (xhr, status, error) {
+            console.error("Error loading examinations:", error);
+
+            // Fallback ke localStorage jika API error
+            examinations =
+              JSON.parse(localStorage.getItem("examinations")) || [];
+            showNotification(
+              "warning",
+              "⚠️ Menggunakan data lokal. Database tidak tersedia."
+            );
+            displayExaminations();
+
+            // Sembunyikan loading spinner
+            document.getElementById("tableLoading").style.display = "none";
+            document.getElementById("tableContainer").style.display = "block";
+          },
+        });
+      }
+
+      // Display examinations in table
+      function displayExaminations() {
+        const tableBody = document.querySelector("#examinationTable tbody");
+        tableBody.innerHTML = "";
+
+        if (examinations.length === 0) {
+          tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                        Belum ada data pemeriksaan
+                    </td>
+                </tr>
+            `;
+          return;
+        }
+
+        // Sort by date (newest first)
+        const sortedExams = [...examinations].sort((a, b) => {
+          return (
+            new Date(b.tanggal_pemeriksaan) - new Date(a.tanggal_pemeriksaan)
+          );
+        });
+
+        sortedExams.slice(0, 10).forEach((exam, index) => {
+          const statusClass = getStatusClass(exam.status);
+          const statusText = getStatusText(exam.status);
+
+          const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><span class="badge bg-primary">${
+                      exam.kode_pemeriksaan
+                    }</span></td>
+                    <td>
+                        <strong>${
+                          exam.nama_lengkap || exam.nama_pasien || "N/A"
+                        }</strong><br>
+                        <small class="text-muted">${
+                          exam.kode_pasien || "N/A"
+                        }</small>
+                    </td>
+                    <td>${exam.jenis_pemeriksaan}</td>
+                    <td>${formatDate(exam.tanggal_pemeriksaan)}</td>
+                    <td>${exam.nama_dokter || "-"}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-info" onclick="viewExamination(${
+                              exam.id
+                            })" title="Lihat">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteExamination(${
+                              exam.id
+                            })" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      // Helper function untuk status
+      function getStatusClass(status) {
+        switch (status) {
+          case "menunggu":
+            return "bg-warning";
+          case "selesai":
+            return "bg-info";
+          case "tervalidasi":
+            return "bg-success";
+          default:
+            return "bg-secondary";
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case "menunggu":
+            return "Menunggu";
+          case "selesai":
+            return "Selesai";
+          case "tervalidasi":
+            return "Tervalidasi";
+          default:
+            return status;
+        }
+      }
+
+      // Format date
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      }
+
+      // View examination detail
+      function viewExamination(id) {
+        const exam = examinations.find((e) => e.id === id);
+        if (exam) {
+          const modalContent = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>Data Pasien</h6>
+                        <table class="table table-sm">
+                            <tr><th width="40%">Kode Pasien</th><td>${
+                              exam.kode_pasien
+                            }</td></tr>
+                            <tr><th>Nama Lengkap</th><td>${
+                              exam.nama_lengkap || exam.nama_pasien
+                            }</td></tr>
+                            <tr><th>Jenis Kelamin</th><td>${
+                              exam.jenis_kelamin || "-"
+                            }</td></tr>
+                            <tr><th>Telepon</th><td>${
+                              exam.telepon || "-"
+                            }</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-flask me-2"></i>Data Pemeriksaan</h6>
+                        <table class="table table-sm">
+                            <tr><th width="40%">Kode Pemeriksaan</th><td>${
+                              exam.kode_pemeriksaan
+                            }</td></tr>
+                            <tr><th>Jenis Pemeriksaan</th><td>${
+                              exam.jenis_pemeriksaan
+                            }</td></tr>
+                            <tr><th>Tanggal Pemeriksaan</th><td>${formatDate(
+                              exam.tanggal_pemeriksaan
+                            )}</td></tr>
+                            <tr><th>Dokter Pengirim</th><td>${
+                              exam.nama_dokter
+                            }</td></tr>
+                            <tr><th>Status</th><td><span class="badge ${getStatusClass(
+                              exam.status
+                            )}">${getStatusText(exam.status)}</span></td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6><i class="fas fa-sticky-note me-2"></i>Catatan</h6>
+                        <div class="alert alert-light">
+                            ${exam.catatan || "-"}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+          document.getElementById("modalDetailContent").innerHTML =
+            modalContent;
+
+          const modal = new bootstrap.Modal(
+            document.getElementById("detailModal")
+          );
+          modal.show();
+        }
+      }
+
+      // Delete examination
+      function deleteExamination(id) {
+        if (
+          confirm("Apakah Anda yakin ingin menghapus data pemeriksaan ini?")
+        ) {
+          $.ajax({
+            url: `/api/pemeriksaan/hapus/${id}`,
+            method: "POST",
+            success: function (response) {
+              if (response.sukses) {
+                showNotification(
+                  "success",
+                  "✅ Data pemeriksaan berhasil dihapus!"
+                );
+                // Refresh tabel
+                loadExaminations();
+              } else {
+                showNotification("error", "❌ Gagal menghapus data.");
+              }
+            },
+            error: function (xhr, status, error) {
+              showNotification("error", "❌ Gagal menghapus data: " + error);
+            },
+          });
+        }
+      }
+
+      // Export to Excel
+      function exportToExcel() {
+        if (examinations.length === 0) {
+          showNotification("error", "❌ Tidak ada data untuk diexport!");
+          return;
+        }
+
+        // Format data untuk Excel
+        let excelData = [
+          [
+            "No",
+            "Kode Pemeriksaan",
+            "Kode Pasien",
+            "Nama Pasien",
+            "Jenis Pemeriksaan",
+            "Tanggal Pemeriksaan",
+            "Dokter",
+            "Status",
+            "Catatan",
+          ],
+        ];
+
+        examinations.forEach((exam, index) => {
+          excelData.push([
+            index + 1,
+            exam.kode_pemeriksaan,
+            exam.kode_pasien,
+            exam.nama_lengkap || exam.nama_pasien,
+            exam.jenis_pemeriksaan,
+            formatDate(exam.tanggal_pemeriksaan),
+            exam.nama_dokter,
+            getStatusText(exam.status),
+            exam.catatan || "",
+          ]);
+        });
+
+        // Buat worksheet
+        let ws = XLSX.utils.aoa_to_sheet(excelData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Pemeriksaan");
+
+        // Export
+        XLSX.writeFile(
+          wb,
+          `Data_Pemeriksaan_${new Date().toISOString().split("T")[0]}.xlsx`
+        );
+      }
+
+      // Show notification
+      function showNotification(type, message) {
+        const alertClass =
+          type === "success"
+            ? "alert-success"
+            : type === "error"
+            ? "alert-danger"
+            : type === "warning"
+            ? "alert-warning"
+            : "alert-info";
+
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText =
+          "top: 20px; right: 20px; z-index: 1050; min-width: 300px; max-width: 400px;";
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 5000);
+      }
+
+      // Auto-generate patient code when name is entered
+      document
+        .getElementById("namaLengkap")
+        .addEventListener("blur", function () {
+          if (this.value && !document.getElementById("kodePasien").value) {
+            generatePatientCode();
+          }
+        });
+    </script>
+  </body>
+</html>

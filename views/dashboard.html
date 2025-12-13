@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - MediLab</title>
+    <title>Dashboard Admin - MediLab</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -12,159 +12,585 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      .stats-card {
-        border-radius: 15px;
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 100%
+        ) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 250px;
+        z-index: 1030;
+        transition: left 0.3s ease;
+      }
+      .navbar.expanded {
+        left: 0;
+      }
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        z-index: 1040;
+        transition: transform 0.3s ease;
+        padding-top: 70px;
+      }
+      .sidebar.collapsed {
+        transform: translateX(-250px);
+      }
+      .main-content {
+        margin-left: 250px;
+        margin-top: 70px;
+        transition: margin-left 0.3s ease;
         padding: 20px;
-        color: white;
+        min-height: calc(100vh - 70px);
+      }
+      .main-content.expanded {
+        margin-left: 0;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         margin-bottom: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       }
-      .card-1 {
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+      .stat-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        height: 100%;
       }
-      .card-2 {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      .stat-card i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        opacity: 0.9;
       }
-      .card-3 {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      .stat-card h4 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 10px 0;
       }
-      .card-4 {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      .stat-card p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      .btn-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: white;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+      }
+      .btn-custom:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        color: white;
+      }
+      .quick-action-card {
+        height: 100%;
+        padding: 25px;
+        text-align: center;
+        border-radius: 15px;
+        background: white;
+        transition: all 0.3s ease;
+      }
+      .quick-action-card:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-5px);
+      }
+      .quick-action-card i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: #667eea;
+      }
+      .quick-action-card:hover i {
+        color: white;
+      }
+      .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        border-top: none;
+      }
+      .table td {
+        vertical-align: middle;
+      }
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .logo-img {
+        width: 40px;
+        margin-right: 10px;
+      }
+      .sidebar-link {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+        text-decoration: none;
+        display: block;
+      }
+      .sidebar-link:hover,
+      .sidebar-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .sidebar-link i {
+        width: 25px;
+        text-align: center;
+        margin-right: 10px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-250px);
+        }
+        .main-content {
+          margin-left: 0;
+        }
+        .navbar {
+          left: 0;
+        }
+        .sidebar.show {
+          transform: translateX(0);
+        }
+        .stat-card h4 {
+          font-size: 1.5rem;
+        }
+      }
+      .welcome-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-left: 5px solid #667eea;
+      }
+      .footer {
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
       }
     </style>
   </head>
+
   <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="p-3">
+        <h5 class="text-center mb-4" style="color: #667eea; font-weight: 700">
+          MENU MEDILAB
+        </h5>
+        <div class="nav flex-column">
+          <a class="sidebar-link active" href="/dashboard">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+          </a>
+          <a class="sidebar-link" href="/pasien">
+            <i class="fas fa-users"></i>Data Pasien
+          </a>
+          <a class="sidebar-link" href="/inputpemeriksaan">
+            <i class="fas fa-plus-circle"></i>Input Pemeriksaan
+          </a>
+          <a class="sidebar-link" href="/validashasil">
+            <i class="fas fa-check-circle"></i>Validasi Hasil
+          </a>
+          <a class="sidebar-link" href="/pembayaran">
+            <i class="fas fa-money-bill-wave"></i>Pembayaran
+          </a>
+          <a class="sidebar-link" href="/total-biaya">
+            <i class="fas fa-chart-bar"></i>Laporan Biaya
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="/dashboard"
-          ><i class="fas fa-flask"></i> MediLab</a
-        >
-        <div class="navbar-nav ms-auto">
-          <span class="nav-link"
-            >Welcome,
-            <?php echo $_SESSION['full_name']; ?>!</span
-          >
-          <a class="nav-link" href="/logout">Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light me-3" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/dashboard">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            alt="Logo MediLab"
+            class="logo-img"
+          />
+          <span>MediLab Dashboard</span>
+        </a>
+        <div class="d-flex align-items-center">
+          <span class="navbar-text me-3">
+            <i class="fas fa-user-circle me-1"></i>
+            Selamat Datang,
+            <strong><?php echo $_SESSION['nama_lengkap'] ?? 'Admin'; ?></strong>
+          </span>
+          <a href="/logout" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
         </div>
       </div>
     </nav>
 
-    <!-- Stats -->
-    <div class="container mt-4">
-      <h3>Dashboard</h3>
-      <div class="row">
-        <div class="col-md-3">
-          <div class="stats-card card-1">
-            <h5>Total Pasien</h5>
-            <h2><?php echo $stats['total_pasien'] ?? 0; ?></h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="stats-card card-2">
-            <h5>Pasien Baru (Hari Ini)</h5>
-            <h2><?php echo $stats['pasien_baru_hari_ini'] ?? 0; ?></h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="stats-card card-3">
-            <h5>Pemeriksaan (Hari Ini)</h5>
-            <h2><?php echo $stats['pemeriksaan_hari_ini'] ?? 0; ?></h2>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="stats-card card-4">
-            <h5>Total Pendapatan</h5>
-            <h2>Rp 12.5M</h2>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Patients -->
-      <div class="row mt-4">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Pasien Terbaru</h5>
-            </div>
-            <div class="card-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>ID Pasien</th>
-                    <th>Nama</th>
-                    <th>Gender</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach($patients as $p): ?>
-                  <tr>
-                    <td><?php echo $p['patient_id']; ?></td>
-                    <td><?php echo $p['full_name']; ?></td>
-                    <td><?php echo $p['gender']; ?></td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <div class="container-fluid">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card welcome-card p-4">
+              <h3 class="mb-2">
+                <i class="fas fa-home me-2" style="color: #667eea"></i>Selamat
+                Datang di Dashboard MediLab
+              </h3>
+              <p class="text-muted">
+                Kelola data laboratorium, pantau statistik, dan akses fitur
+                utama dengan mudah.
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Recent Examinations -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Pemeriksaan Terbaru</h5>
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stat-card text-center">
+              <i class="fas fa-users"></i>
+              <h4><?php echo $stats['total_pasien'] ?? 0; ?></h4>
+              <p>Total Pasien</p>
             </div>
-            <div class="card-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Kode</th>
-                    <th>Jenis</th>
-                    <th>Tanggal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach($examinations as $e): ?>
-                  <tr>
-                    <td><?php echo $e['examination_code']; ?></td>
-                    <td><?php echo $e['examination_type']; ?></td>
-                    <td><?php echo $e['examination_date']; ?></td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stat-card text-center">
+              <i class="fas fa-user-plus"></i>
+              <h4><?php echo $stats['pasien_baru_hari_ini'] ?? 0; ?></h4>
+              <p>Pasien Baru (Hari Ini)</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stat-card text-center">
+              <i class="fas fa-flask"></i>
+              <h4><?php echo $stats['pemeriksaan_hari_ini'] ?? 0; ?></h4>
+              <p>Pemeriksaan (Hari Ini)</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stat-card text-center">
+              <i class="fas fa-money-bill-wave"></i>
+              <h4>Rp 12.5M</h4>
+              <p>Total Pendapatan</p>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Quick Actions -->
-      <div class="row mt-4">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h5>Quick Actions</h5>
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h4 class="mb-3"><i class="fas fa-bolt me-2"></i>Aksi Cepat</h4>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <a href="/inputpemeriksaan" class="text-decoration-none">
+              <div class="quick-action-card">
+                <i class="fas fa-plus-circle"></i>
+                <h5>Input Pemeriksaan</h5>
+                <p>Tambah data pemeriksaan baru</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <a href="/pasien" class="text-decoration-none">
+              <div class="quick-action-card">
+                <i class="fas fa-users"></i>
+                <h5>Kelola Pasien</h5>
+                <p>Lihat dan kelola data pasien</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <a href="/validashasil" class="text-decoration-none">
+              <div class="quick-action-card">
+                <i class="fas fa-check-circle"></i>
+                <h5>Validasi Hasil</h5>
+                <p>Validasi hasil pemeriksaan lab</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <a href="/pembayaran" class="text-decoration-none">
+              <div class="quick-action-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h5>Pembayaran</h5>
+                <p>Kelola transaksi pembayaran</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Two Columns Layout -->
+        <div class="row">
+          <!-- Recent Patients Table -->
+          <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card p-4">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h4 class="mb-0">
+                  <i class="fas fa-list me-2"></i>Pasien Terbaru
+                </h4>
+                <a href="/pasien" class="btn btn-sm btn-outline-primary"
+                  >Lihat Semua</a
+                >
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID Pasien</th>
+                      <th>Nama</th>
+                      <th>Jenis Kelamin</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(!empty($pasien)): ?>
+                    <?php foreach($pasien as $p): ?>
+                    <tr>
+                      <td>
+                        <strong><?php echo $p['kode_pasien']; ?></strong>
+                      </td>
+                      <td><?php echo $p['nama_lengkap']; ?></td>
+                      <td><?php echo $p['jenis_kelamin']; ?></td>
+                      <td>
+                        <span class="badge-status bg-success">Aktif</span>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                    <tr>
+                      <td colspan="4" class="text-center">
+                        Tidak ada data pasien
+                      </td>
+                    </tr>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="card-body">
-              <a href="/pasien" class="btn btn-primary me-2">
-                <i class="fas fa-users"></i> Kelola Pasien
-              </a>
-              <a href="/input-pemeriksaan" class="btn btn-success me-2">
-                <i class="fas fa-plus"></i> Input Pemeriksaan
-              </a>
-              <a href="/pembayaran" class="btn btn-warning me-2">
-                <i class="fas fa-money-bill"></i> Pembayaran
-              </a>
-              <a href="/validasi-hasil" class="btn btn-info">
-                <i class="fas fa-check-circle"></i> Validasi Hasil
-              </a>
+          </div>
+
+          <!-- Recent Examinations -->
+          <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="card p-4">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h4 class="mb-0">
+                  <i class="fas fa-flask me-2"></i>Pemeriksaan Terbaru
+                </h4>
+                <a href="/validashasil" class="btn btn-sm btn-outline-primary"
+                  >Lihat Semua</a
+                >
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Kode</th>
+                      <th>Jenis</th>
+                      <th>Tanggal</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(!empty($pemeriksaan)): ?>
+                    <?php foreach($pemeriksaan as $e): 
+                                        $status_class = '';
+                                        $status_text = '';
+                                        switch($e['status'] ?? 'menunggu') {
+                                            case 'menunggu': $status_class = 'bg-warning'; $status_text = 'Menunggu'; break;
+                                            case 'selesai': $status_class = 'bg-info'; $status_text = 'Selesai'; break;
+                                            case 'tervalidasi': $status_class = 'bg-success'; $status_text = 'Tervalidasi'; break;
+                                            default: $status_class = 'bg-secondary'; $status_text = $e['status'];
+                                        }
+                                    ?>
+                    <tr>
+                      <td>
+                        <strong><?php echo $e['kode_pemeriksaan']; ?></strong>
+                      </td>
+                      <td><?php echo $e['jenis_pemeriksaan']; ?></td>
+                      <td><?php echo $e['tanggal_pemeriksaan']; ?></td>
+                      <td>
+                        <span class="badge-status <?php echo $status_class; ?>"
+                          ><?php echo $status_text; ?></span
+                        >
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                    <tr>
+                      <td colspan="4" class="text-center">
+                        Tidak ada data pemeriksaan
+                      </td>
+                    </tr>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Additional Stats -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card p-4">
+              <h4 class="mb-3">
+                <i class="fas fa-chart-line me-2"></i>Statistik Sistem
+              </h4>
+              <div class="row">
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="text-center">
+                    <div class="display-4 fw-bold text-primary">
+                      <?php echo $stats['total_pemeriksaan'] ?? 0; ?>
+                    </div>
+                    <p class="text-muted">Total Pemeriksaan</p>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="text-center">
+                    <div class="display-4 fw-bold text-success">23</div>
+                    <p class="text-muted">Menunggu Validasi</p>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="text-center">
+                    <div class="display-4 fw-bold text-warning">15</div>
+                    <p class="text-muted">Pasien Baru (Minggu Ini)</p>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                  <div class="text-center">
+                    <div class="display-4 fw-bold text-danger">98%</div>
+                    <p class="text-muted">Kepuasan Pasien</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer text-center">
+          <p class="text-muted mb-0">
+            <i class="fas fa-copyright me-1"></i>
+            <?php echo date('Y'); ?>
+            MediLab System. Dibuat dengan
+            <i class="fas fa-heart text-danger"></i> untuk pelayanan kesehatan
+            yang lebih baik.
+          </p>
+          <small class="text-muted"
+            >Versi 1.0.0 | Terakhir diakses:
+            <?php echo date('d-m-Y H:i:s'); ?></small
+          >
+        </footer>
       </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Toggle Sidebar
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const mainContent = document.getElementById("mainContent");
+          const navbar = document.querySelector(".navbar");
+
+          sidebar.classList.toggle("collapsed");
+          mainContent.classList.toggle("expanded");
+          navbar.classList.toggle("expanded");
+
+          // Simpan state di localStorage
+          const isCollapsed = sidebar.classList.contains("collapsed");
+          localStorage.setItem("sidebarCollapsed", isCollapsed);
+        });
+
+      // Load sidebar state dari localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const navbar = document.querySelector(".navbar");
+
+        if (isCollapsed) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        // Responsive sidebar untuk mobile
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        // Update time every minute
+        function updateTime() {
+          const now = new Date();
+          const timeElements = document.querySelectorAll(".current-time");
+          timeElements.forEach((el) => {
+            el.textContent = now.toLocaleTimeString("id-ID");
+          });
+        }
+
+        setInterval(updateTime, 60000);
+      });
+
+      // Highlight active menu
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname;
+        const menuLinks = document.querySelectorAll(".sidebar-link");
+
+        menuLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("active");
+          }
+        });
+      });
+    </script>
   </body>
 </html>

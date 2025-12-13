@@ -2,6 +2,7 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pembayaran - MediLab</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -15,156 +16,696 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 100%
+        ) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 250px;
+        z-index: 1030;
+        transition: left 0.3s ease;
+      }
+      .navbar.expanded {
+        left: 0;
+      }
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        z-index: 1040;
+        transition: transform 0.3s ease;
+        padding-top: 70px;
+      }
+      .sidebar.collapsed {
+        transform: translateX(-250px);
+      }
+      .main-content {
+        margin-left: 250px;
+        margin-top: 70px;
+        transition: margin-left 0.3s ease;
+        padding: 30px;
+        min-height: calc(100vh - 70px);
+      }
+      .main-content.expanded {
+        margin-left: 0;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 25px;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      .btn-success {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-success:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+      }
+      .table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+      .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .table th {
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+      }
+      .table td {
+        vertical-align: middle;
+        padding: 15px;
+      }
+      .section-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        position: relative;
+        color: #333;
+        display: flex;
+        align-items: center;
+      }
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: #667eea;
+        border-radius: 2px;
+      }
+      .logo-img {
+        width: 40px;
+        margin-right: 10px;
+      }
+      .sidebar-link {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        color: #333;
+        text-decoration: none;
+        display: block;
+      }
+      .sidebar-link:hover,
+      .sidebar-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .sidebar-link i {
+        width: 25px;
+        text-align: center;
+        margin-right: 10px;
+      }
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .header-card {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-left: 5px solid #667eea;
+        padding: 25px;
+        margin-bottom: 30px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+      .modal-content {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      }
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+      }
+      .form-control,
+      .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+      .form-label {
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 8px;
+      }
+      .input-group-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px 0 0 8px;
+      }
+      .receipt-container {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+        font-family: "Courier New", monospace;
+      }
+      .receipt-header {
+        text-align: center;
+        border-bottom: 2px dashed #333;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+      }
+      .receipt-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 8px 0;
+      }
+      .receipt-total {
+        border-top: 2px solid #333;
+        padding-top: 10px;
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+      .payment-method-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .payment-cash {
+        background: #28a745;
+        color: white;
+      }
+      .payment-transfer {
+        background: #17a2b8;
+        color: white;
+      }
+      .payment-ewallet {
+        background: #ffc107;
+        color: #000;
+      }
+      .payment-bpjs {
+        background: #6f42c1;
+        color: white;
+      }
+      .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        height: 100%;
+        text-align: center;
+      }
+      .stats-card i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+      .stats-card h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+      }
+      .stats-card p {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-250px);
+        }
+        .main-content {
+          margin-left: 0;
+        }
+        .navbar {
+          left: 0;
+        }
+        .sidebar.show {
+          transform: translateX(0);
+        }
+      }
+      @media print {
+        .sidebar,
+        .navbar,
+        .btn,
+        .no-print {
+          display: none !important;
+        }
+        .main-content {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .card {
+          box-shadow: none !important;
+          border: none !important;
+        }
+        body {
+          background: white !important;
+        }
+      }
+    </style>
   </head>
+
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="/dashboard"
-          ><i class="fas fa-flask"></i> MediLab</a
-        >
-        <div class="navbar-nav">
-          <a class="nav-link" href="/dashboard">Dashboard</a>
-          <a class="nav-link" href="/validasi-hasil">Validasi</a>
-          <a class="nav-link active" href="/pembayaran">Pembayaran</a>
-          <a class="nav-link" href="/total-biaya">Total Biaya</a>
-          <a class="nav-link" href="/logout">Logout</a>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="p-3">
+        <h5 class="text-center mb-4" style="color: #667eea; font-weight: 700">
+          MENU MEDILAB
+        </h5>
+        <div class="nav flex-column">
+          <a class="sidebar-link" href="/dashboard">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+          </a>
+          <a class="sidebar-link" href="/pasien">
+            <i class="fas fa-users"></i>Data Pasien
+          </a>
+          <a class="sidebar-link" href="/inputpemeriksaan">
+            <i class="fas fa-plus-circle"></i>Input Pemeriksaan
+          </a>
+          <a class="sidebar-link" href="/validashasil">
+            <i class="fas fa-check-circle"></i>Validasi Hasil
+          </a>
+          <a class="sidebar-link active" href="/pembayaran">
+            <i class="fas fa-money-bill-wave"></i>Pembayaran
+          </a>
+          <a class="sidebar-link" href="/total-biaya">
+            <i class="fas fa-chart-bar"></i>Laporan Biaya
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <button class="btn btn-outline-light me-3" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="/dashboard">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            alt="Logo MediLab"
+            class="logo-img"
+          />
+          <span>Sistem Pembayaran</span>
+        </a>
+        <div class="d-flex align-items-center">
+          <span class="navbar-text me-3">
+            <i class="fas fa-user-circle me-1"></i>
+            Selamat Datang,
+            <strong><?php echo $_SESSION['nama_lengkap'] ?? 'Admin'; ?></strong>
+          </span>
+          <a href="/logout" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
         </div>
       </div>
     </nav>
 
-    <div class="container mt-4">
-      <h3><i class="fas fa-money-bill-wave me-2"></i>Pembayaran Pemeriksaan</h3>
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="header-card">
+          <h1 class="mb-3">
+            <i class="fas fa-money-bill-wave me-2" style="color: #667eea"></i
+            >Sistem Pembayaran Pemeriksaan
+          </h1>
+          <p class="text-muted mb-0">
+            Kelola transaksi pembayaran, cetak struk, dan pantau status
+            pembayaran pasien.
+          </p>
+        </div>
 
-      <div class="row">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0">Daftar Pemeriksaan Menunggu Pembayaran</h5>
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-money-bill-wave"></i>
+              <h4 id="totalRevenue">Rp 0</h4>
+              <p>Total Pendapatan</p>
             </div>
-            <div class="card-body">
-              <table id="pendingPaymentsTable" class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Kode Pemeriksaan</th>
-                    <th>Pasien</th>
-                    <th>Jenis Pemeriksaan</th>
-                    <th>Total Biaya</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Data akan diisi oleh JavaScript -->
-                </tbody>
-              </table>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-check-circle"></i>
+              <h4 id="completedPayments">0</h4>
+              <p>Pembayaran Lunas</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-clock"></i>
+              <h4 id="pendingPayments">0</h4>
+              <p>Menunggu Pembayaran</p>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="stats-card">
+              <i class="fas fa-calendar-day"></i>
+              <h4 id="todayPayments">0</h4>
+              <p>Hari Ini</p>
             </div>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0">Form Pembayaran</h5>
-            </div>
-            <div class="card-body">
-              <form id="paymentForm">
-                <div class="mb-3">
-                  <label>Kode Pemeriksaan</label>
-                  <select
-                    class="form-select"
-                    id="examinationCode"
-                    required
-                    onchange="loadExaminationDetails()"
-                  >
-                    <option value="">Pilih pemeriksaan</option>
-                  </select>
-                </div>
-
+        <!-- Main Content Row -->
+        <div class="row">
+          <!-- Pending Payments Table -->
+          <div class="col-lg-8 mb-4">
+            <div class="card">
+              <div class="card-body p-4">
                 <div
-                  id="examinationDetails"
-                  class="mb-3 p-3 border rounded"
-                  style="display: none"
+                  class="d-flex justify-content-between align-items-center mb-4"
                 >
-                  <!-- Detail akan ditampilkan di sini -->
+                  <h4 class="section-title mb-0">
+                    <i class="fas fa-clock me-2"></i>Pemeriksaan Menunggu
+                    Pembayaran
+                  </h4>
+                  <button class="btn btn-primary" onclick="refreshPayments()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                  </button>
                 </div>
 
-                <div class="mb-3">
-                  <label>Metode Pembayaran</label>
-                  <select class="form-select" id="paymentMethod" required>
-                    <option value="">Pilih metode</option>
-                    <option value="Tunai">Tunai</option>
-                    <option value="Transfer Bank">Transfer Bank</option>
-                    <option value="E-Wallet">E-Wallet</option>
-                    <option value="BPJS">BPJS</option>
-                  </select>
+                <div class="table-responsive">
+                  <table id="pendingPaymentsTable" class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th><i class="fas fa-barcode me-1"></i>Kode</th>
+                        <th><i class="fas fa-user me-1"></i>Pasien</th>
+                        <th><i class="fas fa-flask me-1"></i>Pemeriksaan</th>
+                        <th><i class="fas fa-money-bill me-1"></i>Biaya</th>
+                        <th><i class="fas fa-calendar me-1"></i>Tanggal</th>
+                        <th><i class="fas fa-cogs me-1"></i>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                  </table>
                 </div>
-
-                <div class="mb-3">
-                  <label>Total Bayar</label>
-                  <div class="input-group">
-                    <span class="input-group-text">Rp</span>
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="totalAmount"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label>Catatan (Opsional)</label>
-                  <textarea
-                    class="form-control"
-                    id="paymentNotes"
-                    rows="2"
-                  ></textarea>
-                </div>
-
-                <button
-                  type="button"
-                  class="btn btn-success w-100"
-                  onclick="processPayment()"
-                >
-                  <i class="fas fa-check"></i> Proses Pembayaran
-                </button>
-              </form>
+              </div>
             </div>
+          </div>
+
+          <!-- Payment Form -->
+          <div class="col-lg-4 mb-4">
+            <div class="card">
+              <div class="card-body p-4">
+                <h4 class="section-title mb-4">
+                  <i class="fas fa-credit-card me-2"></i>Form Pembayaran
+                </h4>
+
+                <form id="paymentForm">
+                  <div class="mb-3">
+                    <label class="form-label">Kode Pemeriksaan</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-search"></i
+                      ></span>
+                      <select class="form-select" id="examinationCode" required>
+                        <option value="">Pilih pemeriksaan...</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Examination Details -->
+                  <div
+                    id="examinationDetails"
+                    class="mb-4 p-3 border rounded"
+                    style="display: none"
+                  >
+                    <h6>
+                      <i class="fas fa-info-circle me-2"></i>Detail Pemeriksaan
+                    </h6>
+                    <div class="row mt-2">
+                      <div class="col-6">
+                        <small class="text-muted">Pasien</small>
+                        <p class="mb-1 fw-bold" id="detailPasien">-</p>
+                      </div>
+                      <div class="col-6">
+                        <small class="text-muted">Jenis</small>
+                        <p class="mb-1 fw-bold" id="detailJenis">-</p>
+                      </div>
+                      <div class="col-12 mt-2">
+                        <small class="text-muted">Tanggal</small>
+                        <p class="mb-0 fw-bold" id="detailTanggal">-</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Metode Pembayaran</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-wallet"></i
+                      ></span>
+                      <select class="form-select" id="paymentMethod" required>
+                        <option value="">Pilih metode...</option>
+                        <option value="Tunai">Tunai</option>
+                        <option value="Transfer Bank">Transfer Bank</option>
+                        <option value="E-Wallet">
+                          E-Wallet (Gopay/OVO/Dana)
+                        </option>
+                        <option value="BPJS">BPJS</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Total Biaya</label>
+                    <div class="input-group">
+                      <span class="input-group-text">Rp</span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="totalAmount"
+                        placeholder="0"
+                        readonly
+                        style="background: #f8f9fa"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Uang Diterima</label>
+                    <div class="input-group">
+                      <span class="input-group-text">Rp</span>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="amountReceived"
+                        placeholder="Masukkan jumlah uang"
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <small class="text-muted" id="changeInfo"></small>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Catatan (Opsional)</label>
+                    <textarea
+                      class="form-control"
+                      id="paymentNotes"
+                      rows="2"
+                      placeholder="Catatan khusus pembayaran..."
+                    ></textarea>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn btn-success w-100 py-3"
+                    onclick="processPayment()"
+                  >
+                    <i class="fas fa-check-circle me-2"></i>Proses Pembayaran
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Payments -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-4">
+                <h4 class="section-title mb-4">
+                  <i class="fas fa-history me-2"></i>Riwayat Pembayaran Terbaru
+                </h4>
+
+                <div class="table-responsive">
+                  <table id="recentPaymentsTable" class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>
+                          <i class="fas fa-receipt me-1"></i>No. Transaksi
+                        </th>
+                        <th><i class="fas fa-user me-1"></i>Pasien</th>
+                        <th><i class="fas fa-flask me-1"></i>Pemeriksaan</th>
+                        <th><i class="fas fa-money-bill me-1"></i>Jumlah</th>
+                        <th><i class="fas fa-wallet me-1"></i>Metode</th>
+                        <th><i class="fas fa-calendar me-1"></i>Tanggal</th>
+                        <th><i class="fas fa-print me-1"></i>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <p class="text-muted mb-0">
+            <i class="fas fa-copyright me-1"></i>
+            <?php echo date('Y'); ?>
+            MediLab System. Sistem Pembayaran
+          </p>
+          <small class="text-muted" id="lastUpdate"
+            >Terakhir diperbarui:
+            <?php echo date('d-m-Y H:i:s'); ?></small
+          >
+        </footer>
+      </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-receipt me-2"></i>Struk Pembayaran
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <div id="receiptContent">
+              <!-- Receipt will be generated here -->
+            </div>
+          </div>
+          <div class="modal-footer no-print">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-bs-dismiss="modal"
+            >
+              <i class="fas fa-times me-2"></i>Tutup
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="printReceipt()"
+            >
+              <i class="fas fa-print me-2"></i>Cetak Struk
+            </button>
           </div>
         </div>
       </div>
-
-      <!-- Struk Pembayaran (Modal) -->
-      <div class="modal fade" id="receiptModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Struk Pembayaran</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body" id="receiptContent">
-              <!-- Struk akan diisi oleh JavaScript -->
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Tutup
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="printReceipt()"
-              >
-                <i class="fas fa-print"></i> Cetak
-              </button>
-            </div>
+    </div>
+    <!-- Examination Detail Modal -->
+    <div
+      class="modal fade"
+      id="examinationModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-file-medical-alt me-2"></i>Detail Pemeriksaan
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" id="examinationModalContent">
+            <!-- Content will be loaded by JavaScript -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Tutup
+            </button>
           </div>
         </div>
       </div>
@@ -175,7 +716,9 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
     <script>
+      // Data
       let pendingExaminations = [];
+      let recentPayments = [];
       let selectedExamination = null;
 
       // Harga pemeriksaan
@@ -187,177 +730,634 @@
         "Kimia Klinik": 150000,
         Mikrobiologi: 200000,
         Imunologi: 180000,
+        Endokrinologi: 220000,
+        Urinalisis: 80000,
+        Feses: 70000,
+        Lainnya: 100000,
       };
 
-      // Load data pemeriksaan yang belum bayar
-      function loadPendingPayments() {
-        $.ajax({
-          url: "/api/examinations",
-          method: "GET",
-          success: function (data) {
-            pendingExaminations = data.filter(
-              (exam) =>
-                exam.status === "completed" || exam.status === "validated"
-            );
+      // Toggle Sidebar
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          const sidebar = document.getElementById("sidebar");
+          const mainContent = document.getElementById("mainContent");
+          const navbar = document.querySelector(".navbar");
 
-            let table = $("#pendingPaymentsTable").DataTable();
-            table.clear();
+          sidebar.classList.toggle("collapsed");
+          mainContent.classList.toggle("expanded");
+          navbar.classList.toggle("expanded");
 
-            // Update dropdown
-            $("#examinationCode").html(
-              '<option value="">Pilih pemeriksaan</option>'
-            );
-
-            pendingExaminations.forEach(function (exam) {
-              let price = examinationPrices[exam.examination_type] || 100000;
-
-              table.row.add([
-                exam.examination_code,
-                exam.patient_name || "N/A",
-                exam.examination_type,
-                `Rp ${price.toLocaleString()}`,
-                `<span class="badge bg-warning">Belum Bayar</span>`,
-                `<button class="btn btn-sm btn-primary" onclick="selectExamination('${exam.examination_code}')">
-                                <i class="fas fa-money-bill"></i> Bayar
-                            </button>`,
-              ]);
-
-              // Tambah ke dropdown
-              $("#examinationCode").append(`
-                            <option value="${exam.examination_code}">${exam.examination_code} - ${exam.patient_name}</option>
-                        `);
-            });
-            table.draw();
-          },
+          localStorage.setItem(
+            "sidebarCollapsed",
+            sidebar.classList.contains("collapsed")
+          );
         });
+
+      // Load sidebar state
+      document.addEventListener("DOMContentLoaded", function () {
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const navbar = document.querySelector(".navbar");
+
+        if (isCollapsed) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("collapsed");
+          mainContent.classList.add("expanded");
+          navbar.classList.add("expanded");
+        }
+
+        // Set last update time
+        updateLastUpdateTime();
+
+        // Load data
+        loadAllData();
+      });
+
+      // Load all data
+      async function loadAllData() {
+        try {
+          await Promise.all([
+            loadPendingExaminations(),
+            loadRecentPayments(),
+            loadStatistics(),
+          ]);
+        } catch (error) {
+          console.error("Error loading data:", error);
+          showNotification("error", "Gagal memuat data dari server");
+        }
       }
 
-      // Pilih pemeriksaan dari dropdown
-      function loadExaminationDetails() {
-        let code = $("#examinationCode").val();
-        if (!code) {
-          $("#examinationDetails").hide();
+      // Load pending examinations from API
+      async function loadPendingExaminations() {
+        try {
+          showLoading("pendingPaymentsTable");
+
+          const response = await fetch("/medilab/api/pemeriksaan/belum-bayar");
+          if (!response.ok) throw new Error("Network response was not ok");
+
+          const result = await response.json();
+
+          if (result.success) {
+            pendingExaminations = result.data || [];
+            updatePendingPaymentsTable();
+            populateExaminationDropdown();
+          } else {
+            showNotification("error", "Gagal memuat data pemeriksaan");
+          }
+        } catch (error) {
+          console.error("Error loading pending examinations:", error);
+          showNotification("error", "Gagal memuat data pemeriksaan");
+        }
+      }
+
+      // Update pending payments table
+      function updatePendingPaymentsTable() {
+        const tbody = document.querySelector("#pendingPaymentsTable tbody");
+        tbody.innerHTML = "";
+
+        if (pendingExaminations.length === 0) {
+          tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                        Tidak ada pemeriksaan menunggu pembayaran
+                    </td>
+                </tr>
+            `;
           return;
         }
 
-        // Cari pemeriksaan
-        selectedExamination = pendingExaminations.find(
-          (exam) => exam.examination_code === code
-        );
+        pendingExaminations.forEach((exam, index) => {
+          const price = examinationPrices[exam.jenis_pemeriksaan] || 100000;
+          const row = `
+                <tr>
+                    <td><span class="badge bg-primary">${
+                      exam.kode_pemeriksaan
+                    }</span></td>
+                    <td>
+                        <strong>${
+                          exam.nama_lengkap || exam.nama_pasien
+                        }</strong><br>
+                        <small>${exam.kode_pasien}</small>
+                    </td>
+                    <td>${exam.jenis_pemeriksaan}</td>
+                    <td><span class="fw-bold text-success">Rp ${price.toLocaleString(
+                      "id-ID"
+                    )}</span></td>
+                    <td>${formatDate(exam.tanggal_pemeriksaan)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="selectExamination(${
+                              exam.id
+                            })" title="Pilih">
+                                <i class="fas fa-hand-pointer"></i>
+                            </button>
+                            <button class="btn btn-outline-info" onclick="viewExaminationDetail(${
+                              exam.id
+                            })" title="Lihat">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+          tbody.innerHTML += row;
+        });
+      }
 
-        if (selectedExamination) {
-          let price =
-            examinationPrices[selectedExamination.examination_type] || 100000;
-          let html = `
-                    <h6>Detail Pemeriksaan</h6>
-                    <p><strong>Pasien:</strong> ${
-                      selectedExamination.patient_name
-                    }</p>
-                    <p><strong>Jenis:</strong> ${
-                      selectedExamination.examination_type
-                    }</p>
-                    <p><strong>Tanggal:</strong> ${
-                      selectedExamination.examination_date
-                    }</p>
-                    <p><strong>Biaya:</strong> <span class="text-success fw-bold">Rp ${price.toLocaleString()}</span></p>
+      // Populate examination dropdown
+      function populateExaminationDropdown() {
+        const dropdown = document.getElementById("examinationCode");
+        dropdown.innerHTML = '<option value="">Pilih pemeriksaan...</option>';
+
+        pendingExaminations.forEach((exam) => {
+          const option = document.createElement("option");
+          option.value = exam.id;
+          option.textContent = `${exam.kode_pemeriksaan} - ${
+            exam.nama_lengkap || exam.nama_pasien
+          }`;
+          dropdown.appendChild(option);
+        });
+      }
+
+      // Load examination details
+      async function loadExaminationDetails(examId) {
+        if (!examId) {
+          document.getElementById("examinationDetails").style.display = "none";
+          selectedExamination = null;
+          return;
+        }
+
+        try {
+          // Find examination in array
+          selectedExamination = pendingExaminations.find(
+            (exam) => exam.id == examId
+          );
+
+          if (!selectedExamination) {
+            // Fetch from API if not found in array
+            const response = await fetch(`/api/pemeriksaan/${examId}`);
+            if (!response.ok) throw new Error("Network response was not ok");
+
+            const result = await response.json();
+            if (result.success) {
+              selectedExamination = result.data;
+            }
+          }
+
+          if (selectedExamination) {
+            showExaminationDetails();
+          }
+        } catch (error) {
+          console.error("Error loading examination details:", error);
+          showNotification("error", "Gagal memuat detail pemeriksaan");
+        }
+      }
+
+      // Show examination details
+      function showExaminationDetails() {
+        if (!selectedExamination) return;
+
+        const price =
+          examinationPrices[selectedExamination.jenis_pemeriksaan] || 100000;
+
+        document.getElementById("detailPasien").textContent =
+          selectedExamination.nama_lengkap || selectedExamination.nama_pasien;
+        document.getElementById("detailJenis").textContent =
+          selectedExamination.jenis_pemeriksaan;
+        document.getElementById("detailTanggal").textContent = formatDate(
+          selectedExamination.tanggal_pemeriksaan
+        );
+        document.getElementById("totalAmount").value =
+          price.toLocaleString("id-ID");
+
+        document.getElementById("examinationDetails").style.display = "block";
+        document.getElementById("amountReceived").value = "";
+        document.getElementById("changeInfo").textContent = "";
+
+        // Scroll to form
+        document
+          .getElementById("paymentForm")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Select examination from table
+      function selectExamination(examId) {
+        document.getElementById("examinationCode").value = examId;
+        loadExaminationDetails(examId);
+      }
+
+      // View examination detail
+      async function viewExaminationDetail(examId) {
+        try {
+          const response = await fetch(`/api/pemeriksaan/${examId}/detail`);
+          if (!response.ok) throw new Error("Network response was not ok");
+
+          const result = await response.json();
+
+          if (result.success) {
+            const exam = result.data;
+            const price = examinationPrices[exam.jenis_pemeriksaan] || 100000;
+
+            const modalContent = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user me-2"></i>Data Pasien</h6>
+                            <table class="table table-sm">
+                                <tr><th width="40%">Kode Pasien</th><td>${
+                                  exam.kode_pasien
+                                }</td></tr>
+                                <tr><th>Nama Lengkap</th><td>${
+                                  exam.nama_lengkap || exam.nama_pasien
+                                }</td></tr>
+                                <tr><th>Jenis Kelamin</th><td>${
+                                  exam.jenis_kelamin || "-"
+                                }</td></tr>
+                                <tr><th>Telepon</th><td>${
+                                  exam.telepon || "-"
+                                }</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-flask me-2"></i>Data Pemeriksaan</h6>
+                            <table class="table table-sm">
+                                <tr><th width="40%">Kode Pemeriksaan</th><td>${
+                                  exam.kode_pemeriksaan
+                                }</td></tr>
+                                <tr><th>Jenis Pemeriksaan</th><td>${
+                                  exam.jenis_pemeriksaan
+                                }</td></tr>
+                                <tr><th>Tanggal Pemeriksaan</th><td>${formatDate(
+                                  exam.tanggal_pemeriksaan
+                                )}</td></tr>
+                                <tr><th>Dokter Pengirim</th><td>${
+                                  exam.nama_dokter || "-"
+                                }</td></tr>
+                                <tr><th>Biaya</th><td><span class="fw-bold text-success">Rp ${price.toLocaleString(
+                                  "id-ID"
+                                )}</span></td></tr>
+                                <tr><th>Status</th><td><span class="badge ${getStatusBadgeClass(
+                                  exam.status
+                                )}">${getStatusText(
+              exam.status
+            )}</span></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6><i class="fas fa-sticky-note me-2"></i>Catatan</h6>
+                            <div class="alert alert-light">
+                                ${exam.catatan || "-"}
+                            </div>
+                        </div>
+                    </div>
                 `;
 
-          $("#examinationDetails").html(html).show();
-          $("#totalAmount").val(price);
+            // Show modal
+            const modal = new bootstrap.Modal(
+              document.getElementById("examinationModal")
+            );
+            document.getElementById("examinationModalContent").innerHTML =
+              modalContent;
+            modal.show();
+          }
+        } catch (error) {
+          console.error("Error viewing examination detail:", error);
+          showNotification("error", "Gagal memuat detail pemeriksaan");
         }
       }
 
-      // Pilih dari tabel
-      function selectExamination(code) {
-        $("#examinationCode").val(code);
-        loadExaminationDetails();
-        $("html, body").animate(
-          {
-            scrollTop: $("#paymentForm").offset().top - 100,
-          },
-          500
-        );
+      // Calculate change
+      function calculateChange() {
+        const total =
+          parseFloat(
+            document.getElementById("totalAmount").value.replace(/\./g, "")
+          ) || 0;
+        const received =
+          parseFloat(document.getElementById("amountReceived").value) || 0;
+        const changeInfo = document.getElementById("changeInfo");
+
+        if (received > total) {
+          const change = received - total;
+          changeInfo.textContent = `Kembalian: Rp ${change.toLocaleString(
+            "id-ID"
+          )}`;
+          changeInfo.className = "text-success";
+        } else if (received > 0 && received < total) {
+          const remaining = total - received;
+          changeInfo.textContent = `Kurang: Rp ${remaining.toLocaleString(
+            "id-ID"
+          )}`;
+          changeInfo.className = "text-danger";
+        } else if (received === total) {
+          changeInfo.textContent = "Uang pas";
+          changeInfo.className = "text-success";
+        } else {
+          changeInfo.textContent = "";
+        }
       }
 
-      // Proses pembayaran
-      function processPayment() {
+      // Process payment
+      async function processPayment() {
         if (!selectedExamination) {
-          alert("Pilih pemeriksaan terlebih dahulu!");
+          showNotification(
+            "error",
+            "Silakan pilih pemeriksaan terlebih dahulu!"
+          );
           return;
         }
 
-        let paymentData = {
-          examination_id: selectedExamination.id,
-          total_amount: $("#totalAmount").val(),
-          payment_method: $("#paymentMethod").val(),
-          payment_date: new Date().toISOString().split("T")[0],
-          notes: $("#paymentNotes").val(),
+        const paymentMethod = document.getElementById("paymentMethod").value;
+        const amountReceived =
+          parseFloat(document.getElementById("amountReceived").value) || 0;
+        const totalAmount =
+          parseFloat(
+            document.getElementById("totalAmount").value.replace(/\./g, "")
+          ) || 0;
+        const notes = document.getElementById("paymentNotes").value;
+
+        // Validations
+        if (!paymentMethod) {
+          showNotification("error", "Pilih metode pembayaran!");
+          return;
+        }
+
+        if (amountReceived < totalAmount) {
+          showNotification(
+            "error",
+            `Uang diterima kurang! Total: Rp ${totalAmount.toLocaleString(
+              "id-ID"
+            )}, Diterima: Rp ${amountReceived.toLocaleString("id-ID")}`
+          );
+          return;
+        }
+
+        if (
+          !confirm(
+            `Proses pembayaran sebesar Rp ${totalAmount.toLocaleString(
+              "id-ID"
+            )}?`
+          )
+        ) {
+          return;
+        }
+
+        // Prepare payment data
+        const paymentData = {
+          pemeriksaan_id: selectedExamination.id,
+          total_biaya: totalAmount,
+          metode_pembayaran: paymentMethod,
+          uang_diterima: amountReceived,
+          tanggal_pembayaran: new Date().toISOString().split("T")[0],
+          waktu_pembayaran: new Date().toLocaleTimeString("id-ID"),
+          catatan: notes,
+          status_pembayaran: "lunas",
         };
 
-        $.ajax({
-          url: "/api/payment",
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(paymentData),
-          success: function (response) {
-            if (response.success) {
-              showReceipt(paymentData);
-              loadPendingPayments();
-              $("#paymentForm")[0].reset();
-              $("#examinationDetails").hide();
-              selectedExamination = null;
-            } else {
-              alert("Gagal memproses pembayaran: " + response.message);
-            }
-          },
+        try {
+          // Show loading
+          document.getElementById("processPaymentBtn").disabled = true;
+          document.getElementById("processPaymentBtn").innerHTML =
+            '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
+
+          // Send to API
+          const response = await fetch("/api/pembayaran", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(paymentData),
+          });
+
+          const result = await response.json();
+
+          // Reset button
+          document.getElementById("processPaymentBtn").disabled = false;
+          document.getElementById("processPaymentBtn").innerHTML =
+            '<i class="fas fa-check-circle me-2"></i>Proses Pembayaran';
+
+          if (result.sukses) {
+            showNotification("success", "Pembayaran berhasil diproses!");
+
+            // Show receipt
+            showReceipt(result.data);
+
+            // Reset form
+            document.getElementById("paymentForm").reset();
+            document.getElementById("examinationDetails").style.display =
+              "none";
+            document.getElementById("examinationCode").value = "";
+            selectedExamination = null;
+
+            // Reload data
+            await loadAllData();
+          } else {
+            showNotification("error", "Gagal: " + result.pesan);
+          }
+        } catch (error) {
+          console.error("Error processing payment:", error);
+          document.getElementById("processPaymentBtn").disabled = false;
+          document.getElementById("processPaymentBtn").innerHTML =
+            '<i class="fas fa-check-circle me-2"></i>Proses Pembayaran';
+          showNotification(
+            "error",
+            "Gagal memproses pembayaran: " + error.message
+          );
+        }
+      }
+
+      // Load recent payments
+      async function loadRecentPayments() {
+        try {
+          const response = await fetch("/api/pembayaran/recent");
+          if (!response.ok) throw new Error("Network response was not ok");
+
+          const result = await response.json();
+
+          if (result.success) {
+            recentPayments = result.data || [];
+            updateRecentPaymentsTable();
+          }
+        } catch (error) {
+          console.error("Error loading recent payments:", error);
+        }
+      }
+
+      // Update recent payments table
+      function updateRecentPaymentsTable() {
+        const tbody = document.querySelector("#recentPaymentsTable tbody");
+        tbody.innerHTML = "";
+
+        if (recentPayments.length === 0) {
+          tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                        Belum ada riwayat pembayaran
+                    </td>
+                </tr>
+            `;
+          return;
+        }
+
+        recentPayments.forEach((payment) => {
+          const methodClass = getPaymentMethodClass(payment.metode_pembayaran);
+          const row = `
+                <tr>
+                    <td><span class="badge bg-dark">${
+                      payment.no_transaksi || "TRX" + payment.id
+                    }</span></td>
+                    <td>${payment.nama_pasien}</td>
+                    <td>${payment.jenis_pemeriksaan}</td>
+                    <td><span class="fw-bold text-success">Rp ${parseInt(
+                      payment.total_biaya
+                    ).toLocaleString("id-ID")}</span></td>
+                    <td><span class="payment-method-badge ${methodClass}">${
+            payment.metode_pembayaran
+          }</span></td>
+                    <td>${formatDateTime(payment.tanggal_pembayaran)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="printPaymentReceipt(${
+                          payment.id
+                        })">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+          tbody.innerHTML += row;
         });
       }
 
-      // Tampilkan struk
-      function showReceipt(paymentData) {
-        let price =
-          examinationPrices[selectedExamination.examination_type] || 100000;
-        let now = new Date();
+      // Load statistics
+      async function loadStatistics() {
+        try {
+          const response = await fetch("/api/pembayaran/statistik");
+          if (!response.ok) throw new Error("Network response was not ok");
 
-        let receiptHTML = `
-                <div style="font-family: monospace; text-align: center;">
-                    <h4>MEDILAB LABORATORIUM</h4>
-                    <p>Jl. Kesehatan No. 123, Jakarta</p>
-                    <hr>
-                    <p><strong>STRUK PEMBAYARAN</strong></p>
-                    <p>${now.toLocaleDateString()} ${now.toLocaleTimeString()}</p>
-                    <hr>
-                    <table style="width: 100%; text-align: left;">
-                        <tr><td>Kode Pemeriksaan</td><td>: ${
-                          selectedExamination.examination_code
-                        }</td></tr>
-                        <tr><td>Nama Pasien</td><td>: ${
-                          selectedExamination.patient_name
-                        }</td></tr>
-                        <tr><td>Jenis Pemeriksaan</td><td>: ${
-                          selectedExamination.examination_type
-                        }</td></tr>
-                        <tr><td>Metode Bayar</td><td>: ${
-                          paymentData.payment_method
-                        }</td></tr>
-                        <tr><td>Total Biaya</td><td>: Rp ${parseInt(
-                          paymentData.total_amount
-                        ).toLocaleString()}</td></tr>
-                    </table>
-                    <hr>
-                    <h5>TERIMA KASIH</h5>
-                    <p>Silahkan datang kembali</p>
-                </div>
-            `;
+          const result = await response.json();
 
-        $("#receiptContent").html(receiptHTML);
-        $("#receiptModal").modal("show");
+          if (result.success) {
+            const stats = result.data;
+            document.getElementById(
+              "totalRevenue"
+            ).textContent = `Rp ${parseInt(
+              stats.total_pendapatan || 0
+            ).toLocaleString("id-ID")}`;
+            document.getElementById("completedPayments").textContent =
+              stats.jumlah_lunas || 0;
+            document.getElementById("pendingPayments").textContent =
+              stats.jumlah_belum_lunas || 0;
+            document.getElementById("todayPayments").textContent =
+              stats.hari_ini || 0;
+          }
+        } catch (error) {
+          console.error("Error loading statistics:", error);
+        }
       }
 
-      // Cetak struk
+      // Show receipt
+      function showReceipt(paymentData) {
+        const receiptHTML = `
+            <div class="receipt-container">
+                <div class="receipt-header">
+                    <h4 class="mb-2">MEDILAB LABORATORIUM</h4>
+                    <p class="mb-1">Jl. Kesehatan No. 123, Jakarta</p>
+                    <p class="mb-1">Telp: (021) 555-1234</p>
+                    <p class="mb-0">medilab@laboratorium.com</p>
+                </div>
+
+                <div class="receipt-item">
+                    <span>No. Transaksi:</span>
+                    <span><strong>${
+                      paymentData.no_transaksi || "TRX" + paymentData.id
+                    }</strong></span>
+                </div>
+                <div class="receipt-item">
+                    <span>Tanggal:</span>
+                    <span>${formatDate(paymentData.tanggal_pembayaran)} ${
+          paymentData.waktu_pembayaran || ""
+        }</span>
+                </div>
+
+                <hr>
+
+                <div class="receipt-item">
+                    <span>Pasien:</span>
+                    <span><strong>${paymentData.nama_pasien}</strong></span>
+                </div>
+                <div class="receipt-item">
+                    <span>Kode Pasien:</span>
+                    <span>${paymentData.kode_pasien}</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Pemeriksaan:</span>
+                    <span>${paymentData.jenis_pemeriksaan}</span>
+                </div>
+
+                <hr>
+
+                <div class="receipt-item">
+                    <span>Total Biaya:</span>
+                    <span>Rp ${parseInt(paymentData.total_biaya).toLocaleString(
+                      "id-ID"
+                    )}</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Metode Bayar:</span>
+                    <span><strong>${
+                      paymentData.metode_pembayaran
+                    }</strong></span>
+                </div>
+                <div class="receipt-item">
+                    <span>Uang Diterima:</span>
+                    <span>Rp ${parseInt(
+                      paymentData.uang_diterima
+                    ).toLocaleString("id-ID")}</span>
+                </div>
+
+                <div class="receipt-total">
+                    <span>KEMBALIAN:</span>
+                    <span>Rp ${parseInt(
+                      paymentData.kembalian || 0
+                    ).toLocaleString("id-ID")}</span>
+                </div>
+
+                <hr>
+
+                <div class="text-center mt-3">
+                    <p class="mb-2"><strong>TERIMA KASIH</strong></p>
+                    <p class="mb-0">Silahkan datang kembali</p>
+                </div>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">Kasir: ${
+                      paymentData.kasir || "Admin"
+                    }</small>
+                </div>
+            </div>
+        `;
+
+        document.getElementById("receiptContent").innerHTML = receiptHTML;
+        const modal = new bootstrap.Modal(
+          document.getElementById("receiptModal")
+        );
+        modal.show();
+      }
+
+      // Print receipt
       function printReceipt() {
-        let printContent = document.getElementById("receiptContent").innerHTML;
-        let originalContent = document.body.innerHTML;
+        const printContent =
+          document.getElementById("receiptContent").innerHTML;
+        const originalContent = document.body.innerHTML;
 
         document.body.innerHTML = printContent;
         window.print();
@@ -365,10 +1365,174 @@
         window.location.reload();
       }
 
-      $(document).ready(function () {
-        $("#pendingPaymentsTable").DataTable();
-        loadPendingPayments();
-      });
+      // Print payment receipt from history
+      async function printPaymentReceipt(paymentId) {
+        try {
+          const response = await fetch(`/api/pembayaran/${paymentId}/receipt`);
+          if (!response.ok) throw new Error("Network response was not ok");
+
+          const result = await response.json();
+
+          if (result.success) {
+            showReceipt(result.data);
+          }
+        } catch (error) {
+          console.error("Error printing receipt:", error);
+          showNotification("error", "Gagal mencetak struk");
+        }
+      }
+
+      // Refresh payments
+      function refreshPayments() {
+        loadAllData();
+        updateLastUpdateTime();
+        showNotification("info", "Data pembayaran diperbarui");
+      }
+
+      // Helper functions
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      }
+
+      function formatDateTime(dateString) {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function getPaymentMethodClass(method) {
+        switch (method) {
+          case "Tunai":
+            return "payment-cash";
+          case "Transfer Bank":
+            return "payment-transfer";
+          case "E-Wallet":
+            return "payment-ewallet";
+          case "BPJS":
+            return "payment-bpjs";
+          default:
+            return "";
+        }
+      }
+
+      function getStatusBadgeClass(status) {
+        switch (status) {
+          case "menunggu":
+            return "bg-warning";
+          case "selesai":
+            return "bg-info";
+          case "tervalidasi":
+            return "bg-primary";
+          case "terbayar":
+            return "bg-success";
+          default:
+            return "bg-secondary";
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case "menunggu":
+            return "Menunggu";
+          case "selesai":
+            return "Selesai";
+          case "tervalidasi":
+            return "Tervalidasi";
+          case "terbayar":
+            return "Terbayar";
+          default:
+            return status;
+        }
+      }
+
+      function showLoading(tableId) {
+        const table = document.querySelector(`#${tableId} tbody`);
+        if (table) {
+          table.innerHTML = `
+                <tr>
+                    <td colspan="${
+                      tableId === "pendingPaymentsTable" ? 6 : 7
+                    }" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Memuat data...</p>
+                    </td>
+                </tr>
+            `;
+        }
+      }
+
+      function showNotification(type, message) {
+        const alertClass =
+          type === "success"
+            ? "alert-success"
+            : type === "error"
+            ? "alert-danger"
+            : "alert-info";
+
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText =
+          "top: 20px; right: 20px; z-index: 1050; min-width: 300px;";
+        alertDiv.innerHTML = `
+            <strong>${
+              type === "success"
+                ? "Sukses!"
+                : type === "error"
+                ? "Error!"
+                : "Info!"
+            }</strong>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 3000);
+      }
+
+      function updateLastUpdateTime() {
+        const now = new Date();
+        document.getElementById(
+          "lastUpdate"
+        ).textContent = `Terakhir diperbarui: ${now.toLocaleDateString(
+          "id-ID"
+        )} ${now.toLocaleTimeString("id-ID")}`;
+      }
+
+      // Setup event listeners
+      document
+        .getElementById("examinationCode")
+        .addEventListener("change", function () {
+          loadExaminationDetails(this.value);
+        });
+
+      document
+        .getElementById("amountReceived")
+        .addEventListener("input", calculateChange);
+
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        loadStatistics();
+        updateLastUpdateTime();
+      }, 30000);
     </script>
   </body>
 </html>

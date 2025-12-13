@@ -1,61 +1,79 @@
 <?php
-// models/Pasien.php
 
-require_once __DIR__ . '/BaseModel.php';
-
-class Pasien extends BaseModel {
-    protected $table = 'pasien';
+class Pasien {
+    private $conn;
     
     public function __construct() {
-        parent::__construct();
-        require_once dirname(__DIR__) . '/config/database.php';
-        $this->db = Database::getInstance();
+        $this->conn = Database::getInstance();
     }
     
-    // Get total pasien
-    public function getTotal() {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        return $result['total'] ?? 0;
-    }
-    
-    // Get recent patients
-    public function getRecent($limit = 5) {
-        $sql = "SELECT * FROM {$this->table} ORDER BY created_at DESC LIMIT :limit";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
+    public function getAllPasien() {
+        $sql = "SELECT * FROM pasien ORDER BY dibuat_pada DESC";
+        $stmt = $this->conn->query($sql);
         return $stmt->fetchAll();
     }
+    
+    public function getPasienById($id) {
+        $sql = "SELECT * FROM pasien WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+    
+    // TAMBAHKAN METHOD INI ↓↓↓
+    public function getPasienByKode($kode_pasien) {
+        $sql = "SELECT * FROM pasien WHERE kode_pasien = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$kode_pasien]);
+        return $stmt->fetch();
+    }
+    // TAMBAHKAN METHOD INI ↑↑↑
+    
+    public function createPasien($data) {
+        $sql = "INSERT INTO pasien (kode_pasien, nama_lengkap, jenis_kelamin, tanggal_lahir, alamat, telepon, email) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['kode_pasien'],
+            $data['nama_lengkap'],
+            $data['jenis_kelamin'],
+            $data['tanggal_lahir'],
+            $data['alamat'],
+            $data['telepon'],
+            $data['email']
+        ]);
+    }
+    
+    public function updatePasien($id, $data) {
+        $sql = "UPDATE pasien SET 
+                nama_lengkap = ?, jenis_kelamin = ?, tanggal_lahir = ?, alamat = ?, telepon = ?, email = ? 
+                WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['nama_lengkap'],
+            $data['jenis_kelamin'],
+            $data['tanggal_lahir'],
+            $data['alamat'],
+            $data['telepon'],
+            $data['email'],
+            $id
+        ]);
+    }
+    
+    public function deletePasien($id) {
+        $sql = "DELETE FROM pasien WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+    
+    public function getStatistikPasien() {
+        $sql = "SELECT 
+                COUNT(*) as total_pasien,
+                (SELECT COUNT(*) FROM pasien WHERE DATE(dibuat_pada) = CURDATE()) as pasien_baru_hari_ini,
+                (SELECT COUNT(*) FROM pemeriksaan WHERE DATE(tanggal_pemeriksaan) = CURDATE()) as pemeriksaan_hari_ini
+                FROM pasien";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetch();
+    }
 }
-
-// Model untuk pemeriksaan
-class Pemeriksaan extends BaseModel {
-    protected $table = 'pemeriksaan';
-    
-    public function __construct() {
-        parent::__construct();
-        require_once dirname(__DIR__) . '/config/database.php';
-        $this->db = Database::getInstance();
-    }
-    
-    // Get total pemeriksaan
-    public function getTotal() {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        return $result['total'] ?? 0;
-    }
-    
-    // Get pending validation
-    public function getPending() {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table} WHERE status = 'pending'";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        return $result['total'] ?? 0;
-    }
-}
+?>

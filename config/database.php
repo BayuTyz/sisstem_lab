@@ -8,7 +8,7 @@ class Database {
     private $host = 'localhost';
     private $username = 'root';
     private $password = '';
-    private $database = 'medilab_db';
+    private $database = 'mediclab_db';
     
     private function __construct() {
         try {
@@ -29,3 +29,4 @@ class Database {
         return self::$instance->connection;
     }
 }
+?>

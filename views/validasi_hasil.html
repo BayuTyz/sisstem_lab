@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Validasi Hasil - MediLab</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-color: #0d6efd;
+        --success-color: #198754;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #0dcaf0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+      }
+
+      .navbar {
+        background: var(--primary-gradient) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin: 0 2px;
+      }
+
+      .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        font-weight: 600;
+      }
+
+      .nav-link:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #17a2b8;
+        padding-bottom: 10px;
+      }
+
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        font-weight: 700;
+        border: none;
+        padding: 20px;
+        border-radius: 15px 15px 0 0 !important;
+      }
+
+      .card-body {
+        padding: 25px;
+      }
+
+      .table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        background: white;
+      }
+
+      .table thead {
+        background: #2c3e50;
+        color: white;
+      }
+
+      .table th {
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+      }
+
+      .table td {
+        vertical-align: middle;
+        padding: 15px;
+        border-color: #f1f1f1;
+      }
+
+      .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: var(--primary-gradient);
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+      }
+
+      .btn-success:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+      }
+
+      .btn-info {
+        background: linear-gradient(135deg, #0dcaf0 0%, #31d2f2 100%);
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+        text-align: center;
+        min-width: 100px;
+      }
+
+      .pending {
+        background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+        color: #000;
+      }
+
+      .completed {
+        background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+        color: white;
+      }
+
+      .validated {
+        background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+        color: white;
+      }
+
+      .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+        padding: 20px 30px;
+      }
+
+      .modal-header .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+      }
+
+      .modal-title {
+        font-weight: 700;
+      }
+
+      .modal-body {
+        padding: 30px;
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+
+      label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+      }
+
+      .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.75rem;
+      }
+
+      .badge.bg-success {
+        background: var(--success-color) !important;
+      }
+
+      .badge.bg-warning {
+        background: var(--warning-color) !important;
+        color: #000;
+      }
+
+      .badge.bg-danger {
+        background: var(--danger-color) !important;
+      }
+
+      .badge.bg-info {
+        background: var(--info-color) !important;
+      }
+
+      .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .stats-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 10px 0;
+      }
+
+      .stats-label {
+        color: #6c757d;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      @media print {
+        .navbar,
+        .btn,
+        .modal,
+        .stats-card {
+          display: none !important;
+        }
+        body {
+          background: white;
+        }
+        .card {
+          box-shadow: none;
+          border: 1px solid #dee2e6;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+        .card-body {
+          padding: 15px;
+        }
+        .table-responsive {
+          font-size: 0.9rem;
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .dataTables_wrapper {
+        padding: 0;
+      }
+
+      .dataTables_length select,
+      .dataTables_filter input {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard">
+          <i class="fas fa-flask me-2"></i> MediLab
+        </a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/pasien">Pasien</a>
+          <a class="nav-link active" href="/validashasil">Validasi</a>
+          <a class="nav-link" href="/pembayaran">Pembayaran</a>
+          <a class="nav-link" href="/logout">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <h3>
+        <i class="fas fa-check-circle me-2"></i>Validasi Hasil Pemeriksaan
+      </h3>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stats-number" id="pendingCount">0</div>
+            <div class="stats-label">Menunggu Validasi</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="stats-number" id="completedCount">0</div>
+            <div class="stats-label">Selesai Diperiksa</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stats-number" id="validatedCount">0</div>
+            <div class="stats-label">Tervalidasi</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-flask"></i>
+            </div>
+            <div class="stats-number" id="totalCount">0</div>
+            <div class="stats-label">Total Pemeriksaan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Card -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-list-check me-2"></i>Daftar Pemeriksaan Menunggu
+            Validasi
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table
+              id="examinationsTable"
+              class="table table-striped table-hover"
+            >
+              <thead>
+                <tr>
+                  <th>Kode Pemeriksaan</th>
+                  <th>Pasien</th>
+                  <th>Jenis Pemeriksaan</th>
+                  <th>Tanggal</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Data akan diisi oleh JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Detail & Validasi -->
+      <div class="modal fade" id="validationModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                <i class="fas fa-file-medical-alt me-2"></i>Validasi Hasil
+                Pemeriksaan
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div id="validationDetails">
+                <!-- Detail akan diisi oleh JavaScript -->
+              </div>
+
+              <hr />
+              <h5>
+                <i class="fas fa-plus-circle me-2"></i>Tambah Hasil Pemeriksaan
+              </h5>
+              <form id="resultForm">
+                <input type="hidden" id="examinationId" />
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label>Parameter</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="parameterName"
+                        required
+                        placeholder="Nama parameter"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="mb-3">
+                      <label>Hasil</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="resultValue"
+                        required
+                        placeholder="Nilai hasil"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="mb-3">
+                      <label>Nilai Normal</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="normalRange"
+                        required
+                        placeholder="Rentang normal"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="mb-3">
+                      <label>Satuan</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="unit"
+                        placeholder="mg/dL"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label>Status</label>
+                      <select class="form-select" id="resultStatus" required>
+                        <option value="normal">Normal</option>
+                        <option value="abnormal">Abnormal</option>
+                        <option value="critical">Kritis</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-8 d-flex align-items-end">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      onclick="addResult()"
+                    >
+                      <i class="fas fa-plus me-2"></i> Tambah Hasil
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <div class="mt-4">
+                <h5>
+                  <i class="fas fa-table me-2"></i>Hasil yang Sudah Ditambahkan
+                </h5>
+                <table class="table table-sm table-hover" id="resultsTable">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Hasil</th>
+                      <th>Nilai Normal</th>
+                      <th>Satuan</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Hasil akan ditambahkan dinamis -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                <i class="fas fa-times me-2"></i> Tutup
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="validateExamination()"
+              >
+                <i class="fas fa-check me-2"></i> Validasi Selesai
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+      let currentExaminationId = null;
+      let results = [];
+      let examinationsData = [];
+
+      // Load data pemeriksaan
+      function loadExaminations() {
+        $.ajax({
+          url: "/api/examinations",
+          method: "GET",
+          success: function (data) {
+            examinationsData = data || [];
+
+            // Update stats
+            updateStats();
+
+            let table = $("#examinationsTable").DataTable({
+              pageLength: 10,
+              lengthMenu: [5, 10, 25, 50],
+              language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                paginate: {
+                  first: "Pertama",
+                  last: "Terakhir",
+                  next: "Selanjutnya",
+                  previous: "Sebelumnya",
+                },
+              },
+            });
+
+            table.clear();
+
+            examinationsData.forEach(function (exam) {
+              let statusClass = "";
+              let statusText = "";
+              switch (exam.status) {
+                case "pending":
+                case "menunggu":
+                  statusClass = "pending";
+                  statusText = "Menunggu";
+                  break;
+                case "completed":
+                case "selesai":
+                  statusClass = "completed";
+                  statusText = "Selesai";
+                  break;
+                case "validated":
+                case "tervalidasi":
+                  statusClass = "validated";
+                  statusText = "Tervalidasi";
+                  break;
+                default:
+                  statusClass = "pending";
+                  statusText = exam.status;
+              }
+
+              table.row.add([
+                `<strong>${
+                  exam.kode_pemeriksaan || exam.examination_code
+                }</strong>`,
+                exam.pasien_nama || exam.patient_name || "N/A",
+                exam.jenis_pemeriksaan || exam.examination_type,
+                new Date(
+                  exam.tanggal_pemeriksaan || exam.examination_date
+                ).toLocaleDateString("id-ID"),
+                `<span class="status-badge ${statusClass}">${statusText}</span>`,
+                `<div class="action-buttons">
+                  <button class="btn btn-sm btn-info" onclick="showValidation(${
+                    exam.id
+                  })">
+                    <i class="fas fa-eye"></i> Lihat
+                  </button>
+                  <button class="btn btn-sm btn-warning" onclick="editExamination(${
+                    exam.id
+                  })" ${
+                  exam.status === "validated" || exam.status === "tervalidasi"
+                    ? "disabled"
+                    : ""
+                }>
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>`,
+              ]);
+            });
+
+            table.draw();
+          },
+          error: function (xhr, status, error) {
+            console.error("Error loading examinations:", error);
+            // Fallback to dummy data
+            loadDummyData();
+          },
+        });
+      }
+
+      // Update stats
+      function updateStats() {
+        const pending = examinationsData.filter(
+          (e) => e.status === "pending" || e.status === "menunggu"
+        ).length;
+        const completed = examinationsData.filter(
+          (e) => e.status === "completed" || e.status === "selesai"
+        ).length;
+        const validated = examinationsData.filter(
+          (e) => e.status === "validated" || e.status === "tervalidasi"
+        ).length;
+
+        $("#pendingCount").text(pending);
+        $("#completedCount").text(completed);
+        $("#validatedCount").text(validated);
+        $("#totalCount").text(examinationsData.length);
+      }
+
+      // Load dummy data for demo
+      function loadDummyData() {
+        examinationsData = [
+          {
+            id: 1,
+            kode_pemeriksaan: "LAB-2024-001",
+            pasien_nama: "Ahmad Santoso",
+            jenis_pemeriksaan: "Darah Lengkap",
+            tanggal_pemeriksaan: "2024-03-07",
+            status: "pending",
+            dokter_nama: "Dr. Zatta Ilya",
+          },
+          {
+            id: 2,
+            kode_pemeriksaan: "LAB-2024-002",
+            pasien_nama: "Siti Rahayu",
+            jenis_pemeriksaan: "Glukosa Puasa",
+            tanggal_pemeriksaan: "2024-03-07",
+            status: "completed",
+            dokter_nama: "Dr. Indah Permata",
+          },
+          {
+            id: 3,
+            kode_pemeriksaan: "LAB-2024-003",
+            pasien_nama: "Budi Prasetyo",
+            jenis_pemeriksaan: "Profil Lipid",
+            tanggal_pemeriksaan: "2024-03-06",
+            status: "pending",
+            dokter_nama: "Dr. Rizki Maulana",
+          },
+        ];
+
+        updateStats();
+
+        let table = $("#examinationsTable").DataTable();
+        table.clear();
+
+        examinationsData.forEach(function (exam) {
+          let statusClass = "";
+          let statusText = "";
+          switch (exam.status) {
+            case "pending":
+              statusClass = "pending";
+              statusText = "Menunggu";
+              break;
+            case "completed":
+              statusClass = "completed";
+              statusText = "Selesai";
+              break;
+            case "validated":
+              statusClass = "validated";
+              statusText = "Tervalidasi";
+              break;
+            default:
+              statusClass = "pending";
+              statusText = exam.status;
+          }
+
+          table.row.add([
+            `<strong>${exam.kode_pemeriksaan}</strong>`,
+            exam.pasien_nama,
+            exam.jenis_pemeriksaan,
+            new Date(exam.tanggal_pemeriksaan).toLocaleDateString("id-ID"),
+            `<span class="status-badge ${statusClass}">${statusText}</span>`,
+            `<div class="action-buttons">
+              <button class="btn btn-sm btn-info" onclick="showValidation(${
+                exam.id
+              })">
+                <i class="fas fa-eye"></i> Lihat
+              </button>
+              <button class="btn btn-sm btn-warning" onclick="editExamination(${
+                exam.id
+              })" ${exam.status === "validated" ? "disabled" : ""}>
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            </div>`,
+          ]);
+        });
+
+        table.draw();
+      }
+
+      // Tampilkan modal validasi
+      function showValidation(id) {
+        currentExaminationId = id;
+        results = [];
+
+        // Find examination data
+        const exam = examinationsData.find((e) => e.id === id);
+
+        if (exam) {
+          let html = `
+            <div class="card">
+              <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-file-medical me-2"></i>Data Pemeriksaan</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                      <tr>
+                        <th width="40%"><i class="fas fa-barcode me-2"></i>Kode Pemeriksaan</th>
+                        <td><strong>${exam.kode_pemeriksaan}</strong></td>
+                      </tr>
+                      <tr>
+                        <th><i class="fas fa-user me-2"></i>Nama Pasien</th>
+                        <td>${exam.pasien_nama}</td>
+                      </tr>
+                      <tr>
+                        <th><i class="fas fa-flask me-2"></i>Jenis Pemeriksaan</th>
+                        <td>${exam.jenis_pemeriksaan}</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                      <tr>
+                        <th width="40%"><i class="fas fa-user-md me-2"></i>Dokter Pengirim</th>
+                        <td>${exam.dokter_nama || "-"}</td>
+                      </tr>
+                      <tr>
+                        <th><i class="fas fa-calendar-alt me-2"></i>Tanggal Pemeriksaan</th>
+                        <td>${new Date(
+                          exam.tanggal_pemeriksaan
+                        ).toLocaleDateString("id-ID")}</td>
+                      </tr>
+                      <tr>
+                        <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                        <td><span class="badge ${
+                          exam.status === "pending"
+                            ? "bg-warning"
+                            : exam.status === "completed"
+                            ? "bg-success"
+                            : "bg-info"
+                        }">${
+            exam.status === "pending"
+              ? "Menunggu"
+              : exam.status === "completed"
+              ? "Selesai"
+              : "Tervalidasi"
+          }</span></td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          $("#validationDetails").html(html);
+          $("#examinationId").val(id);
+
+          // Tampilkan hasil yang sudah ada (dummy data)
+          if (exam.status === "completed" || exam.status === "validated") {
+            // Data dummy hasil
+            const dummyResults = [
+              {
+                parameter_name: "Hemoglobin",
+                result_value: "14",
+                normal_range: "13-17",
+                unit: "g/dL",
+                status: "normal",
+              },
+              {
+                parameter_name: "Leukosit",
+                result_value: "7.0",
+                normal_range: "4.0-11.0",
+                unit: "10³/µL",
+                status: "normal",
+              },
+              {
+                parameter_name: "Trombosit",
+                result_value: "250",
+                normal_range: "150-450",
+                unit: "10³/µL",
+                status: "normal",
+              },
+            ];
+
+            results = dummyResults;
+            updateResultsTable();
+          } else {
+            // Reset tabel hasil untuk pemeriksaan baru
+            $("#resultsTable tbody").empty();
+          }
+        }
+
+        $("#validationModal").modal("show");
+      }
+
+      // Tambah hasil pemeriksaan
+      function addResult() {
+        const parameter = $("#parameterName").val();
+        const resultValue = $("#resultValue").val();
+        const normalRange = $("#normalRange").val();
+        const unit = $("#unit").val();
+        const status = $("#resultStatus").val();
+
+        if (!parameter || !resultValue || !normalRange) {
+          alert("Harap lengkapi semua field yang diperlukan!");
+          return;
+        }
+
+        let result = {
+          parameter_name: parameter,
+          result_value: resultValue,
+          normal_range: normalRange,
+          unit: unit || "-",
+          status: status,
+        };
+
+        results.push(result);
+        updateResultsTable();
+        $("#resultForm")[0].reset();
+        $("#parameterName").focus();
+      }
+
+      // Update tabel hasil
+      function updateResultsTable() {
+        let table = $("#resultsTable tbody");
+        table.empty();
+
+        results.forEach(function (result, index) {
+          let statusBadge = "";
+          switch (result.status) {
+            case "normal":
+              statusBadge = '<span class="badge bg-success">Normal</span>';
+              break;
+            case "abnormal":
+              statusBadge = '<span class="badge bg-warning">Abnormal</span>';
+              break;
+            case "critical":
+              statusBadge = '<span class="badge bg-danger">Kritis</span>';
+              break;
+          }
+
+          table.append(`
+            <tr>
+              <td><strong>${result.parameter_name}</strong></td>
+              <td>${result.result_value}</td>
+              <td>${result.normal_range}</td>
+              <td>${result.unit}</td>
+              <td>${statusBadge}</td>
+              <td>
+                <button class="btn btn-sm btn-danger" onclick="removeResult(${index})">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+
+      // Hapus hasil
+      function removeResult(index) {
+        if (confirm("Apakah Anda yakin ingin menghapus hasil ini?")) {
+          results.splice(index, 1);
+          updateResultsTable();
+        }
+      }
+
+      // Edit pemeriksaan
+      function editExamination(id) {
+        showValidation(id);
+      }
+
+      // Validasi pemeriksaan
+      function validateExamination() {
+        if (results.length === 0) {
+          alert("Harap tambahkan hasil pemeriksaan terlebih dahulu!");
+          return;
+        }
+
+        if (
+          confirm(
+            "Apakah Anda yakin ingin menyelesaikan validasi hasil pemeriksaan ini?"
+          )
+        ) {
+          $.ajax({
+            url: `/api/examination/validate/${currentExaminationId}`,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ results: results }),
+            success: function (response) {
+              alert(response.message || "Validasi berhasil!");
+              $("#validationModal").modal("hide");
+              loadExaminations();
+            },
+            error: function (xhr, status, error) {
+              alert("Gagal validasi: " + error);
+            },
+          });
+        }
+      }
+
+      $(document).ready(function () {
+        loadExaminations();
+
+        // Handle form submit dengan Enter
+        $("#resultForm").on("keypress", function (e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            addResult();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

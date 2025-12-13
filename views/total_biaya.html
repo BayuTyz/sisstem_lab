@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Total Biaya - MediLab</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      .navbar {
+        background-color: #0d6efd;
+      }
+
+      .container {
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        margin-top: 30px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        background-color: #0dcaf0;
+        color: white;
+        border: none;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+      }
+
+      .card-header h4,
+      .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .card-body {
+        padding: 25px;
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        padding: 8px 12px;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+
+      label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 5px;
+      }
+
+      .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 10px 20px;
+      }
+
+      .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+
+      .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+
+      .table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .table thead {
+        background-color: #0dcaf0;
+        color: white;
+      }
+
+      .table th {
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+      }
+
+      .table td {
+        vertical-align: middle;
+        padding: 15px;
+      }
+
+      .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      .badge {
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-weight: 500;
+      }
+
+      .nav-link.active {
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+
+      #revenueChart,
+      #paymentMethodChart {
+        max-height: 300px;
+      }
+
+      .row.mb-4 {
+        margin-bottom: 25px !important;
+      }
+
+      .row.mb-4 .col-md-3 {
+        margin-bottom: 15px;
+      }
+
+      .stats-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        text-align: center;
+      }
+
+      .stats-card i {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #0dcaf0;
+      }
+
+      .stats-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+        color: #2c3e50;
+      }
+
+      .stats-card .card-title {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+
+      @media print {
+        .navbar,
+        .btn,
+        .text-end,
+        .filter-card {
+          display: none !important;
+        }
+        .card {
+          box-shadow: none !important;
+          border: 1px solid #dee2e6 !important;
+        }
+        .card-header {
+          background: white !important;
+          color: black !important;
+          border-bottom: 2px solid #000 !important;
+        }
+      }
+
+      .text-end {
+        margin-top: 20px;
+      }
+
+      h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 25px;
+      }
+
+      .filter-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .filter-card .card-header {
+        background-color: #f8f9fa;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .chart-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        height: 100%;
+      }
+
+      .chart-card .card-header {
+        background-color: #0dcaf0;
+        color: white;
+      }
+
+      .dataTables_wrapper {
+        padding: 0;
+      }
+
+      .dataTables_length select,
+      .dataTables_filter input {
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        padding: 5px 10px;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding-left: 15px;
+          padding-right: 15px;
+        }
+        .card-body {
+          padding: 15px;
+        }
+        .row.mb-4 .col-md-3 {
+          margin-bottom: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard">
+          <i class="fas fa-flask me-2"></i> MediLab
+        </a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/pembayaran">Pembayaran</a>
+          <a class="nav-link active" href="/total-biaya">Total Biaya</a>
+          <a class="nav-link" href="/logout">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h3><i class="fas fa-chart-line me-2"></i>Laporan Total Biaya</h3>
+
+      <!-- Filter -->
+      <div class="card filter-card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Laporan</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <label class="form-label">Periode Dari</label>
+              <input
+                type="date"
+                class="form-control"
+                id="startDate"
+                value="<?php echo date('Y-m-01'); ?>"
+              />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Periode Sampai</label>
+              <input
+                type="date"
+                class="form-control"
+                id="endDate"
+                value="<?php echo date('Y-m-d'); ?>"
+              />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Jenis Laporan</label>
+              <select class="form-select" id="reportType">
+                <option value="daily">Harian</option>
+                <option value="monthly">Bulanan</option>
+                <option value="yearly">Tahunan</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-primary w-100" onclick="loadReport()">
+                <i class="fas fa-filter me-1"></i> Terapkan Filter
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistik -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="stats-card">
+            <i class="fas fa-money-bill-wave"></i>
+            <h3 id="totalRevenue">Rp 0</h3>
+            <p class="card-title">Total Pendapatan</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <i class="fas fa-check-circle"></i>
+            <h3 id="paidCount">0</h3>
+            <p class="card-title">Pembayaran Lunas</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <i class="fas fa-clock"></i>
+            <h3 id="unpaidCount">0</h3>
+            <p class="card-title">Belum Dibayar</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <i class="fas fa-calculator"></i>
+            <h3 id="avgTransaction">Rp 0</h3>
+            <p class="card-title">Rata-rata/Transaksi</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <div class="chart-card">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-chart-line me-2"></i>Grafik Pendapatan
+              </h5>
+            </div>
+            <div class="card-body">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="chart-card">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-credit-card me-2"></i>Metode Pembayaran
+              </h5>
+            </div>
+            <div class="card-body">
+              <canvas id="paymentMethodChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Detail -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-list me-2"></i>Detail Transaksi</h5>
+        </div>
+        <div class="card-body">
+          <table id="transactionsTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Kode Pemeriksaan</th>
+                <th>Pasien</th>
+                <th>Jenis Pemeriksaan</th>
+                <th>Metode Bayar</th>
+                <th>Jumlah</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi oleh JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tombol Ekspor -->
+      <div class="text-end">
+        <button class="btn btn-success me-2" onclick="exportToExcel()">
+          <i class="fas fa-file-excel me-1"></i> Export ke Excel
+        </button>
+        <button class="btn btn-danger" onclick="printReport()">
+          <i class="fas fa-print me-1"></i> Cetak Laporan
+        </button>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+      let revenueChart, methodChart;
+      let transactionsData = [];
+
+      // Load laporan
+      function loadReport() {
+        let params = {
+          start_date: $("#startDate").val(),
+          end_date: $("#endDate").val(),
+          report_type: $("#reportType").val(),
+        };
+
+        // Simulasi data untuk demo
+        setTimeout(() => {
+          // Data dummy untuk demo
+          const dummyData = {
+            stats: {
+              total_revenue: 12500000,
+              paid_count: 42,
+              unpaid_count: 8,
+              avg_transaction: 250000,
+            },
+            chart_data: {
+              labels: [
+                "1 Mar",
+                "2 Mar",
+                "3 Mar",
+                "4 Mar",
+                "5 Mar",
+                "6 Mar",
+                "7 Mar",
+              ],
+              revenue: [
+                1200000, 1800000, 1500000, 2200000, 1900000, 2100000, 1800000,
+              ],
+              method_labels: ["Tunai", "Transfer Bank", "E-Wallet", "BPJS"],
+              method_data: [45, 30, 15, 10],
+            },
+            transactions: [
+              {
+                payment_date: "2024-03-07",
+                examination_code: "LAB-001",
+                patient_name: "Ahmad Santoso",
+                examination_type: "Darah Lengkap",
+                payment_method: "Tunai",
+                total_amount: 100000,
+                payment_status: "paid",
+              },
+              {
+                payment_date: "2024-03-07",
+                examination_code: "LAB-002",
+                patient_name: "Siti Rahayu",
+                examination_type: "Glukosa Puasa",
+                payment_method: "Transfer Bank",
+                total_amount: 50000,
+                payment_status: "paid",
+              },
+              {
+                payment_date: "2024-03-06",
+                examination_code: "LAB-003",
+                patient_name: "Budi Prasetyo",
+                examination_type: "Kolesterol",
+                payment_method: "E-Wallet",
+                total_amount: 75000,
+                payment_status: "paid",
+              },
+              {
+                payment_date: "2024-03-06",
+                examination_code: "LAB-004",
+                patient_name: "Dewi Anggraini",
+                examination_type: "Darah Lengkap",
+                payment_method: "BPJS",
+                total_amount: 0,
+                payment_status: "unpaid",
+              },
+              {
+                payment_date: "2024-03-05",
+                examination_code: "LAB-005",
+                patient_name: "Rudi Hartono",
+                examination_type: "Glukosa Puasa",
+                payment_method: "Tunai",
+                total_amount: 50000,
+                payment_status: "paid",
+              },
+            ],
+          };
+
+          transactionsData = dummyData.transactions || [];
+          updateStatistics(dummyData.stats || {});
+          updateCharts(dummyData.chart_data || {});
+          updateTable();
+        }, 500);
+      }
+
+      // Update statistik
+      function updateStatistics(stats) {
+        $("#totalRevenue").text(
+          "Rp " + (stats.total_revenue || 0).toLocaleString("id-ID")
+        );
+        $("#paidCount").text(stats.paid_count || 0);
+        $("#unpaidCount").text(stats.unpaid_count || 0);
+        $("#avgTransaction").text(
+          "Rp " + (stats.avg_transaction || 0).toLocaleString("id-ID")
+        );
+      }
+
+      // Update chart
+      function updateCharts(chartData) {
+        // Revenue Chart
+        if (revenueChart) revenueChart.destroy();
+
+        let ctx1 = document.getElementById("revenueChart").getContext("2d");
+        revenueChart = new Chart(ctx1, {
+          type: "line",
+          data: {
+            labels: chartData.labels || [],
+            datasets: [
+              {
+                label: "Pendapatan (Rp)",
+                data: chartData.revenue || [],
+                borderColor: "#0d6efd",
+                backgroundColor: "rgba(13, 110, 253, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `Rp ${context.raw.toLocaleString("id-ID")}`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return "Rp " + value.toLocaleString("id-ID");
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Payment Method Chart
+        if (methodChart) methodChart.destroy();
+
+        let ctx2 = document
+          .getElementById("paymentMethodChart")
+          .getContext("2d");
+        methodChart = new Chart(ctx2, {
+          type: "doughnut",
+          data: {
+            labels: chartData.method_labels || [],
+            datasets: [
+              {
+                data: chartData.method_data || [],
+                backgroundColor: [
+                  "#0d6efd", // Tunai
+                  "#198754", // Transfer
+                  "#ffc107", // E-Wallet
+                  "#6f42c1", // BPJS
+                ],
+                borderWidth: 1,
+                borderColor: "#fff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const label = context.label || "";
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce(
+                      (a, b) => a + b,
+                      0
+                    );
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} transaksi (${percentage}%)`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Update tabel
+      function updateTable() {
+        let table = $("#transactionsTable").DataTable({
+          pageLength: 10,
+          lengthMenu: [5, 10, 25, 50],
+          language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data per halaman",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            paginate: {
+              first: "Pertama",
+              last: "Terakhir",
+              next: "Selanjutnya",
+              previous: "Sebelumnya",
+            },
+          },
+        });
+
+        table.clear();
+
+        transactionsData.forEach(function (transaction) {
+          let statusBadge = "";
+          switch (transaction.payment_status) {
+            case "paid":
+              statusBadge = '<span class="badge bg-success">Lunas</span>';
+              break;
+            case "unpaid":
+              statusBadge = '<span class="badge bg-warning">Belum Bayar</span>';
+              break;
+            case "partial":
+              statusBadge = '<span class="badge bg-info">Sebagian</span>';
+              break;
+          }
+
+          table.row.add([
+            new Date(transaction.payment_date).toLocaleDateString("id-ID"),
+            transaction.examination_code || "",
+            transaction.patient_name || "",
+            transaction.examination_type || "",
+            transaction.payment_method,
+            transaction.total_amount > 0
+              ? "Rp " +
+                parseInt(transaction.total_amount || 0).toLocaleString("id-ID")
+              : "Rp 0",
+            statusBadge,
+          ]);
+        });
+
+        table.draw();
+      }
+
+      // Export ke Excel
+      function exportToExcel() {
+        if (transactionsData.length === 0) {
+          alert("Tidak ada data untuk diexport!");
+          return;
+        }
+
+        // Format data untuk Excel
+        let excelData = [
+          ["Laporan Total Biaya MediLab"],
+          ["Periode: " + $("#startDate").val() + " s/d " + $("#endDate").val()],
+          ["Tanggal Export: " + new Date().toLocaleDateString("id-ID")],
+          [],
+          ["Tanggal", "Kode", "Pasien", "Jenis", "Metode", "Jumlah", "Status"],
+        ];
+
+        transactionsData.forEach(function (t) {
+          excelData.push([
+            new Date(t.payment_date).toLocaleDateString("id-ID"),
+            t.examination_code || "",
+            t.patient_name || "",
+            t.examination_type || "",
+            t.payment_method,
+            t.total_amount,
+            t.payment_status === "paid"
+              ? "Lunas"
+              : t.payment_status === "unpaid"
+              ? "Belum Bayar"
+              : "Sebagian",
+          ]);
+        });
+
+        // Tambahkan summary
+        excelData.push([""]);
+        excelData.push(["SUMMARY"]);
+        excelData.push([
+          "Total Pendapatan:",
+          "",
+          "",
+          "",
+          "",
+          $("#totalRevenue").text().replace("Rp ", ""),
+        ]);
+        excelData.push([
+          "Transaksi Lunas:",
+          "",
+          "",
+          "",
+          "",
+          $("#paidCount").text(),
+        ]);
+        excelData.push([
+          "Transaksi Belum Bayar:",
+          "",
+          "",
+          "",
+          "",
+          $("#unpaidCount").text(),
+        ]);
+
+        // Buat worksheet
+        let ws = XLSX.utils.aoa_to_sheet(excelData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Laporan");
+
+        // Export
+        XLSX.writeFile(
+          wb,
+          `Laporan_MediLab_${new Date().toISOString().split("T")[0]}.xlsx`
+        );
+      }
+
+      // Cetak laporan
+      function printReport() {
+        window.print();
+      }
+
+      $(document).ready(function () {
+        // Inisialisasi DataTable
+        $("#transactionsTable").DataTable({
+          pageLength: 10,
+          lengthMenu: [5, 10, 25, 50],
+          language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data per halaman",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            paginate: {
+              first: "Pertama",
+              last: "Terakhir",
+              next: "Selanjutnya",
+              previous: "Sebelumnya",
+            },
+          },
+        });
+
+        loadReport(); // Load data default
+
+        // Set default dates
+        let today = new Date();
+        let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        $("#startDate").val(firstDay.toISOString().split("T")[0]);
+        $("#endDate").val(today.toISOString().split("T")[0]);
+      });
+    </script>
+  </body>
+</html>
